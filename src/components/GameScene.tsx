@@ -1,4 +1,4 @@
-import { ContactShadows, PerspectiveCamera, RoundedBox, useAnimations, useGLTF, useKeyboardControls } from '@react-three/drei'
+import { ContactShadows, PerspectiveCamera, RoundedBox, Text, useAnimations, useGLTF, useKeyboardControls } from '@react-three/drei'
 import { Bloom, EffectComposer, SMAA, Vignette } from '@react-three/postprocessing'
 import { useFrame } from '@react-three/fiber'
 import { useEffect, useMemo, useRef } from 'react'
@@ -287,8 +287,10 @@ function RoadRunScene() {
       <directionalLight position={[-7, 14, -4]} intensity={2.3} color="#fff0c7" castShadow shadow-mapSize={[2048, 2048]} />
       <pointLight position={[0, 4, -6]} intensity={7} color="#ffd89a" distance={24} />
       <Road />
+      <SukhumvitRail />
       <City />
       <CafeStorefronts />
+      <ThongLorIdentity />
       <StreetGreenery />
       <CafePatios />
       <Traffic />
@@ -1053,8 +1055,92 @@ function OverheadSigns() {
               roughness={0.42}
             />
           </mesh>
+          <Text position={[0, 7.92, 0.23]} fontSize={0.36} color={index % 2 ? '#ffbd5d' : '#daf8e8'} anchorX="center" anchorY="middle">
+            {index % 2 ? 'SOI 55  COFFEE  IZAKAYA' : 'THONG LO  SUKHUMVIT 55'}
+          </Text>
         </group>
       ))}
+    </group>
+  )
+}
+
+function SukhumvitRail() {
+  return (
+    <group position={[-13.2, 0, 0]}>
+      <mesh castShadow receiveShadow position={[0, 6.7, 420]}>
+        <boxGeometry args={[2.4, 0.58, 940]} />
+        <meshStandardMaterial color="#d5d1c4" roughness={0.5} metalness={0.14} />
+      </mesh>
+      <mesh castShadow position={[0, 7.12, 420]}>
+        <boxGeometry args={[1.72, 0.16, 940]} />
+        <meshStandardMaterial color="#3a4347" roughness={0.34} metalness={0.36} />
+      </mesh>
+      {Array.from({ length: 19 }, (_, index) => (
+        <group key={index} position={[0, 3.35, index * 52]}>
+          <mesh castShadow position={[0, 1.65, 0]}>
+            <boxGeometry args={[1.1, 5.9, 0.72]} />
+            <meshStandardMaterial color="#bdb7aa" roughness={0.58} />
+          </mesh>
+          <mesh castShadow position={[0, 4.3, 0]}>
+            <boxGeometry args={[3.0, 0.34, 0.84]} />
+            <meshStandardMaterial color="#d8d2c5" roughness={0.5} />
+          </mesh>
+        </group>
+      ))}
+      {[210, 575].map((z) => (
+        <group key={z} position={[0, 8.2, z]}>
+          <RoundedBox castShadow args={[8.8, 1.12, 2.1]} radius={0.12} smoothness={4}>
+            <meshStandardMaterial color="#e4e7e4" roughness={0.32} metalness={0.18} />
+          </RoundedBox>
+          <mesh position={[0, 0.06, 1.08]}>
+            <boxGeometry args={[8.1, 0.42, 0.05]} />
+            <meshStandardMaterial color="#204f8c" emissive="#113057" emissiveIntensity={0.16} roughness={0.22} />
+          </mesh>
+          {[-3.2, -1.6, 0, 1.6, 3.2].map((x) => (
+            <mesh key={x} position={[x, 0.06, 1.13]}>
+              <boxGeometry args={[0.72, 0.34, 0.04]} />
+              <meshStandardMaterial color="#18242d" roughness={0.18} metalness={0.36} />
+            </mesh>
+          ))}
+          <Text position={[0, 0.08, 1.18]} fontSize={0.32} color="#eaf6ff" anchorX="center" anchorY="middle">
+            BTS THONG LO
+          </Text>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+function ThongLorIdentity() {
+  return (
+    <group>
+      {[92, 262, 432, 642, 812].map((z, index) => {
+        const side = index % 2 ? -1 : 1
+        return (
+          <group key={z} position={[side * 9.15, 0, z]} rotation={[0, side > 0 ? -0.08 : 0.08, 0]}>
+            <mesh castShadow position={[0, 1.8, 0]}>
+              <boxGeometry args={[0.16, 3.6, 0.16]} />
+              <meshStandardMaterial color="#2b3235" roughness={0.38} metalness={0.32} />
+            </mesh>
+            <RoundedBox castShadow position={[0, 3.28, 0]} args={[2.4, 0.72, 0.12]} radius={0.04} smoothness={3}>
+              <meshStandardMaterial color={index % 2 ? '#182528' : '#fff3d2'} emissive={index % 2 ? '#123b36' : '#8d6028'} emissiveIntensity={0.2} roughness={0.32} />
+            </RoundedBox>
+            <Text position={[0, 3.3, side * -0.08]} rotation={[0, side > 0 ? -0.02 : 0.02, 0]} fontSize={0.26} color={index % 2 ? '#c5ffe5' : '#3b2a18'} anchorX="center" anchorY="middle">
+              {index % 2 ? 'JAPANESE DINING' : 'SPECIALTY COFFEE'}
+            </Text>
+            {index === 2 && (
+              <group position={[0, 4.1, 0]}>
+                <RoundedBox castShadow args={[2.0, 0.56, 0.12]} radius={0.04} smoothness={3}>
+                  <meshStandardMaterial color="#18533f" emissive="#1c674e" emissiveIntensity={0.28} roughness={0.3} />
+                </RoundedBox>
+                <Text position={[0, 0, side * -0.08]} fontSize={0.24} color="#e2fff0" anchorX="center" anchorY="middle">
+                  SOI 55
+                </Text>
+              </group>
+            )}
+          </group>
+        )
+      })}
     </group>
   )
 }
@@ -1062,43 +1148,57 @@ function OverheadSigns() {
 function GlacierBlueEvSuv({ refObject }: { refObject: RefObject<Group | null> }) {
   return (
     <group ref={refObject}>
-      <RoundedBox castShadow receiveShadow position={[0, 0.58, 0]} args={[2.42, 0.74, 4.56]} radius={0.28} smoothness={7}>
+      <RoundedBox castShadow receiveShadow position={[0, 0.52, -0.12]} args={[2.38, 0.56, 4.58]} radius={0.34} smoothness={10}>
         <meshStandardMaterial color="#9ed5ea" roughness={0.16} metalness={0.38} />
       </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.86, 1.52]} args={[2.06, 0.26, 1.0]} radius={0.28} smoothness={7}>
+      <RoundedBox castShadow position={[0, 0.72, 1.55]} args={[1.96, 0.34, 1.34]} radius={0.3} smoothness={10}>
         <meshStandardMaterial color="#a7dbef" roughness={0.15} metalness={0.4} />
       </RoundedBox>
-      <mesh position={[0, 0.97, 0.15]} rotation={[-0.04, 0, 0]}>
-        <boxGeometry args={[2.0, 0.018, 3.35]} />
-        <meshStandardMaterial color="#eaffff" transparent opacity={0.18} roughness={0.08} metalness={0.7} />
-      </mesh>
-      <RoundedBox castShadow position={[0, 1.09, -0.34]} args={[1.78, 0.62, 2.28]} radius={0.32} smoothness={8}>
+      <RoundedBox castShadow position={[0, 0.77, -1.75]} args={[2.16, 0.3, 0.86]} radius={0.26} smoothness={8}>
+        <meshStandardMaterial color="#8fcbe3" roughness={0.17} metalness={0.42} />
+      </RoundedBox>
+      <RoundedBox castShadow position={[0, 1.03, -0.34]} args={[1.72, 0.7, 2.42]} radius={0.38} smoothness={12}>
         <meshStandardMaterial color="#151d24" roughness={0.06} metalness={0.55} />
       </RoundedBox>
-      <mesh castShadow position={[0, 1.3, 0.08]} rotation={[-0.02, 0, 0]}>
-        <boxGeometry args={[1.54, 0.045, 1.55]} />
-        <meshStandardMaterial color="#0b1116" roughness={0.03} metalness={0.72} />
-      </mesh>
-      <mesh castShadow position={[0, 1.08, -1.35]} rotation={[0.2, 0, 0]}>
-        <boxGeometry args={[1.58, 0.42, 0.08]} />
-        <meshStandardMaterial color="#101b22" roughness={0.04} metalness={0.65} />
-      </mesh>
-      <mesh castShadow position={[0, 1.0, 0.82]} rotation={[-0.14, 0, 0]}>
-        <boxGeometry args={[1.56, 0.34, 0.08]} />
-        <meshStandardMaterial color="#111a20" roughness={0.05} metalness={0.54} />
-      </mesh>
+      <RoundedBox castShadow position={[0, 1.27, -0.42]} args={[1.46, 0.08, 1.62]} radius={0.08} smoothness={4}>
+        <meshStandardMaterial color="#03070a" roughness={0.02} metalness={0.82} />
+      </RoundedBox>
+      <RoundedBox castShadow position={[0, 0.98, 0.93]} rotation={[-0.18, 0, 0]} args={[1.52, 0.42, 0.1]} radius={0.06} smoothness={3}>
+        <meshStandardMaterial color="#0c171e" roughness={0.04} metalness={0.65} />
+      </RoundedBox>
+      <RoundedBox castShadow position={[0, 1.08, -1.52]} rotation={[0.24, 0, 0]} args={[1.46, 0.46, 0.1]} radius={0.06} smoothness={3}>
+        <meshStandardMaterial color="#0c171e" roughness={0.04} metalness={0.65} />
+      </RoundedBox>
+      {[-1.12, 1.12].map((x) => (
+        <group key={`side-detail-${x}`} position={[x, 0, 0]}>
+          <RoundedBox castShadow position={[0, 0.73, -0.38]} args={[0.045, 0.44, 1.28]} radius={0.04} smoothness={3}>
+            <meshStandardMaterial color="#0b1419" roughness={0.05} metalness={0.66} />
+          </RoundedBox>
+          <mesh castShadow position={[0, 0.55, 0.38]}>
+            <boxGeometry args={[0.035, 0.035, 0.44]} />
+            <meshStandardMaterial color="#eafcff" roughness={0.16} metalness={0.42} />
+          </mesh>
+          <mesh castShadow position={[0, 0.55, -0.95]}>
+            <boxGeometry args={[0.035, 0.035, 0.34]} />
+            <meshStandardMaterial color="#eafcff" roughness={0.16} metalness={0.42} />
+          </mesh>
+        </group>
+      ))}
       <CabinCouple />
-      <RoundedBox castShadow position={[0, 0.38, 2.23]} args={[2.12, 0.2, 0.16]} radius={0.08} smoothness={4}>
+      <mesh position={[0, 0.93, 0.18]} rotation={[-0.06, 0, 0]}>
+        <boxGeometry args={[1.9, 0.018, 3.45]} />
+        <meshStandardMaterial color="#eaffff" transparent opacity={0.16} roughness={0.08} metalness={0.72} />
+      </mesh>
+      <RoundedBox castShadow position={[0, 0.34, 2.18]} args={[2.04, 0.18, 0.22]} radius={0.12} smoothness={5}>
         <meshStandardMaterial color="#77bfd9" roughness={0.14} metalness={0.42} />
       </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.36, -2.22]} args={[2.04, 0.18, 0.16]} radius={0.08} smoothness={4}>
+      <RoundedBox castShadow position={[0, 0.35, -2.18]} args={[2.02, 0.18, 0.22]} radius={0.12} smoothness={5}>
         <meshStandardMaterial color="#6bb6d2" roughness={0.15} metalness={0.38} />
       </RoundedBox>
       {[-1.22, 1.22].map((x) => (
-        <mesh key={`mirror-${x}`} castShadow position={[x, 1.02, -0.68]}>
-          <boxGeometry args={[0.18, 0.11, 0.34]} />
+        <RoundedBox key={`mirror-${x}`} castShadow position={[x, 0.96, 0.48]} args={[0.18, 0.12, 0.36]} radius={0.06} smoothness={4}>
           <meshStandardMaterial color="#0d151a" roughness={0.18} metalness={0.46} />
-        </mesh>
+        </RoundedBox>
       ))}
       {[[-1.08, -1.48], [1.08, -1.48], [-1.08, 1.48], [1.08, 1.48]].map(([x, z]) => (
         <group key={`${x}-${z}`} position={[x, 0.31, z]} rotation={[Math.PI / 2, 0, 0]}>
@@ -1112,18 +1212,26 @@ function GlacierBlueEvSuv({ refObject }: { refObject: RefObject<Group | null> })
           </mesh>
         </group>
       ))}
+      {[-1.09, 1.09].map((x) =>
+        [-1.48, 1.48].map((z) => (
+          <mesh key={`arch-${x}-${z}`} castShadow position={[x, 0.34, z]} rotation={[0, Math.PI / 2, 0]}>
+            <torusGeometry args={[0.48, 0.045, 8, 28, Math.PI]} />
+            <meshStandardMaterial color="#7bbbd3" roughness={0.17} metalness={0.36} />
+          </mesh>
+        )),
+      )}
       <mesh position={[0, 0.6, 2.34]}>
-        <boxGeometry args={[1.62, 0.055, 0.035]} />
+        <boxGeometry args={[1.72, 0.045, 0.035]} />
         <meshStandardMaterial color="#d9fbff" emissive="#b7efff" emissiveIntensity={2.1} />
       </mesh>
       {[-0.88, 0.88].map((x) => (
         <mesh key={`headlight-${x}`} position={[x, 0.55, 2.32]}>
-          <boxGeometry args={[0.32, 0.11, 0.04]} />
+          <boxGeometry args={[0.44, 0.08, 0.04]} />
           <meshStandardMaterial color="#eefcff" emissive="#ccf4ff" emissiveIntensity={2.5} />
         </mesh>
       ))}
       <mesh position={[0, 0.54, -2.35]}>
-        <boxGeometry args={[1.58, 0.06, 0.035]} />
+        <boxGeometry args={[1.72, 0.055, 0.035]} />
         <meshStandardMaterial color="#ff2d36" emissive="#ff1f2a" emissiveIntensity={2.2} />
       </mesh>
       <pointLight position={[-0.8, 0.45, 2.42]} intensity={4.8} distance={12} color="#d9fbff" />
@@ -1237,17 +1345,24 @@ function City() {
           <group key={index} position={[side * (15 + (index % 5) * 3), height / 2 - 0.15, index * 22]}>
             <mesh castShadow receiveShadow>
               <boxGeometry args={[4 + (index % 3) * 2, height, 6 + (index % 4)]} />
-              <meshStandardMaterial color={index % 3 === 0 ? '#26323a' : '#1b252c'} roughness={0.7} metalness={0.08} />
+              <meshStandardMaterial color={index % 3 === 0 ? '#d7dbd6' : index % 3 === 1 ? '#9fb0b8' : '#303b40'} roughness={0.52} metalness={0.12} />
             </mesh>
+            {Array.from({ length: Math.min(9, Math.floor(height / 1.8)) }, (_, row) => (
+              <mesh key={`balcony-${row}`} position={[0, -height / 2 + 1.2 + row * 1.55, side > 0 ? -3.18 : 3.18]}>
+                <boxGeometry args={[3.2 + (index % 3), 0.08, 0.28]} />
+                <meshStandardMaterial color="#f4f0e6" roughness={0.36} metalness={0.12} />
+              </mesh>
+            ))}
             {Array.from({ length: Math.min(7, Math.floor(height / 2)) }, (_, row) =>
-              [-0.8, 0.8].map((x) => (
+              [-1.25, 0, 1.25].map((x) => (
                 <mesh key={`${row}-${x}`} position={[x, -height / 2 + 1.6 + row * 1.7, side > 0 ? -3.06 : 3.06]}>
-                  <boxGeometry args={[0.46, 0.22, 0.04]} />
+                  <boxGeometry args={[0.48, 0.34, 0.04]} />
                   <meshStandardMaterial
-                    color={row % 3 === 0 ? '#f1c86f' : '#89aabc'}
-                    emissive={row % 3 === 0 ? '#f1a83b' : '#41606c'}
-                    emissiveIntensity={row % 3 === 0 ? 0.45 : 0.18}
-                    roughness={0.32}
+                    color={row % 3 === 0 ? '#fff5cd' : '#7997a3'}
+                    emissive={row % 3 === 0 ? '#f2b95a' : '#36505a'}
+                    emissiveIntensity={row % 3 === 0 ? 0.32 : 0.12}
+                    roughness={0.22}
+                    metalness={0.22}
                   />
                 </mesh>
               )),
@@ -1280,6 +1395,7 @@ function CafeStorefronts() {
         facade: ['#f2dfc2', '#d9e5dc', '#ead8dc', '#d8e1ec', '#ece1c9'][index % 5],
         awning: ['#315c4c', '#9a3943', '#be8b39', '#304d68'][index % 4],
         sign: ['#fff3d1', '#f2fbff', '#e8ffd9'][index % 3],
+        name: ['ROAST HOUSE', 'SUSHI BAR', 'SLOW COFFEE', 'WINE BISTRO', 'MATCHA LAB'][index % 5],
       })),
     [],
   )
@@ -1304,6 +1420,19 @@ function CafeStorefronts() {
             <boxGeometry args={[3.4, 0.42, 0.12]} />
             <meshStandardMaterial color={shop.sign} emissive="#d7a850" emissiveIntensity={0.26} roughness={0.34} />
           </mesh>
+          <Text position={[0, 3.3, -shop.side * 2.24]} rotation={[0, shop.side > 0 ? -0.02 : 0.02, 0]} fontSize={0.22} color="#2d271d" anchorX="center" anchorY="middle">
+            {shop.name}
+          </Text>
+          {index % 4 === 1 && (
+            <group position={[shop.side * -2.55, 1.6, -shop.side * 2.28]}>
+              {[0, 1, 2].map((lamp) => (
+                <mesh key={lamp} castShadow position={[0, 0.62 - lamp * 0.58, 0]}>
+                  <sphereGeometry args={[0.18, 16, 10]} />
+                  <meshStandardMaterial color="#d84534" emissive="#a81f18" emissiveIntensity={0.24} roughness={0.44} />
+                </mesh>
+              ))}
+            </group>
+          )}
           {[-2.15, 2.15].map((x) => (
             <group key={x} position={[x, 0, -shop.side * 2.75]}>
               <mesh castShadow position={[0, 0.26, 0]}>
