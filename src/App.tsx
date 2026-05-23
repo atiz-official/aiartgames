@@ -183,24 +183,71 @@ function AudioDirector() {
   const contextRef = useRef<AudioContext | null>(null)
   const engineRef = useRef<OscillatorNode | null>(null)
   const engineGainRef = useRef<GainNode | null>(null)
+  const musicRef = useRef<{
+    master: GainNode
+    pad: Array<{ oscillator: OscillatorNode; gain: GainNode }>
+    shimmer: OscillatorNode
+    shimmerGain: GainNode
+  } | null>(null)
   const lastCollisionRef = useRef(0)
+
+  function ensureAudioContext() {
+    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
+    if (!AudioContextClass) return null
+    if (!contextRef.current) contextRef.current = new AudioContextClass()
+    const context = contextRef.current
+    void context.resume()
+    return context
+  }
+
+  function ensureMusic(context: AudioContext) {
+    if (musicRef.current) return musicRef.current
+
+    const master = context.createGain()
+    master.gain.value = 0
+    master.connect(context.destination)
+
+    const padNotes = [196, 246.94, 293.66, 369.99]
+    const pad = padNotes.map((frequency, index) => {
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      oscillator.type = index % 2 ? 'sine' : 'triangle'
+      oscillator.frequency.value = frequency
+      gain.gain.value = 0.012
+      oscillator.connect(gain)
+      gain.connect(master)
+      oscillator.start()
+      return { oscillator, gain }
+    })
+
+    const shimmer = context.createOscillator()
+    const shimmerGain = context.createGain()
+    shimmer.type = 'sine'
+    shimmer.frequency.value = 880
+    shimmerGain.gain.value = 0.002
+    shimmer.connect(shimmerGain)
+    shimmerGain.connect(master)
+    shimmer.start()
+
+    musicRef.current = { master, pad, shimmer, shimmerGain }
+    return musicRef.current
+  }
 
   useEffect(() => {
     if (!soundEnabled || status !== 'running') {
       engineGainRef.current?.gain.setTargetAtTime(0, contextRef.current?.currentTime ?? 0, 0.05)
+      musicRef.current?.master.gain.setTargetAtTime(0, contextRef.current?.currentTime ?? 0, 0.18)
       return
     }
 
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-    if (!AudioContextClass) return
-    if (!contextRef.current) contextRef.current = new AudioContextClass()
-    const context = contextRef.current
-    void context.resume()
+    const context = ensureAudioContext()
+    if (!context) return
+    const music = ensureMusic(context)
 
     if (!engineRef.current) {
       const oscillator = context.createOscillator()
       const gain = context.createGain()
-      oscillator.type = 'sawtooth'
+      oscillator.type = 'sine'
       gain.gain.value = 0
       oscillator.connect(gain)
       gain.connect(context.destination)
@@ -209,8 +256,16 @@ function AudioDirector() {
       engineGainRef.current = gain
     }
 
-    engineRef.current.frequency.setTargetAtTime(55 + speed * 2.2 + stress * 0.25, context.currentTime, 0.08)
-    engineGainRef.current?.gain.setTargetAtTime(0.012 + Math.min(0.045, speed / 900), context.currentTime, 0.08)
+    const relaxedMood = Math.max(0, 100 - stress) / 100
+    engineRef.current.frequency.setTargetAtTime(42 + speed * 1.15, context.currentTime, 0.16)
+    engineGainRef.current?.gain.setTargetAtTime(0.006 + Math.min(0.024, speed / 1400), context.currentTime, 0.12)
+    music.master.gain.setTargetAtTime(0.26 + relaxedMood * 0.08, context.currentTime, 0.3)
+    music.pad.forEach(({ oscillator, gain }, index) => {
+      const drift = Math.sin(context.currentTime * (0.12 + index * 0.025)) * (0.5 + index * 0.12)
+      oscillator.detune.setTargetAtTime(drift, context.currentTime, 0.25)
+      gain.gain.setTargetAtTime(0.008 + relaxedMood * 0.008 + Math.min(0.004, speed / 9000), context.currentTime, 0.35)
+    })
+    music.shimmerGain.gain.setTargetAtTime(speed > 8 ? 0.0025 + relaxedMood * 0.002 : 0.001, context.currentTime, 0.35)
   }, [soundEnabled, speed, status, stress])
 
   useEffect(() => {
@@ -219,20 +274,22 @@ function AudioDirector() {
       return
     }
 
-    const AudioContextClass = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
-    if (!AudioContextClass) return
-    if (!contextRef.current) contextRef.current = new AudioContextClass()
-    const context = contextRef.current
-    const oscillator = context.createOscillator()
-    const gain = context.createGain()
-    oscillator.type = 'square'
-    oscillator.frequency.value = 92
-    gain.gain.value = 0.08
-    oscillator.connect(gain)
-    gain.connect(context.destination)
-    oscillator.start()
-    oscillator.stop(context.currentTime + 0.16)
-    gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.16)
+    const context = ensureAudioContext()
+    if (!context) return
+
+    ;[659.25, 783.99].forEach((frequency, index) => {
+      const oscillator = context.createOscillator()
+      const gain = context.createGain()
+      oscillator.type = 'sine'
+      oscillator.frequency.value = frequency
+      gain.gain.setValueAtTime(0.0001, context.currentTime)
+      gain.gain.exponentialRampToValueAtTime(index ? 0.035 : 0.026, context.currentTime + 0.02)
+      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.42 + index * 0.08)
+      oscillator.connect(gain)
+      gain.connect(context.destination)
+      oscillator.start(context.currentTime + index * 0.035)
+      oscillator.stop(context.currentTime + 0.55 + index * 0.08)
+    })
     lastCollisionRef.current = collisions
   }, [collisions, soundEnabled])
 
