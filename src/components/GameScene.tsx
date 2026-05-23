@@ -295,6 +295,7 @@ function RoadRunScene() {
       <CafePatios />
       <Traffic />
       <ScenicCafe />
+      <CafeCoupleMoment />
       <GlacierBlueEvSuv refObject={ev} />
       <CinematicGrade />
     </>
@@ -1245,39 +1246,109 @@ function GlacierBlueEvSuv({ refObject }: { refObject: RefObject<Group | null> })
 
 function CabinCouple() {
   return (
-    <group position={[0, 0, 0.05]}>
-      <group position={[-0.38, 1.04, -0.38]}>
-        <mesh castShadow position={[0, -0.18, 0.02]}>
-          <boxGeometry args={[0.32, 0.32, 0.22]} />
-          <meshStandardMaterial color="#263338" roughness={0.58} />
+    <group position={[0, 0, 0.03]}>
+      <SeatedPerson position={[-0.42, 0.86, -0.18]} skin="#c28d62" shirt="#263338" hair="#15120f" scale={0.58} />
+      <SeatedPerson position={[0.42, 0.84, -0.24]} skin="#dfb58e" shirt="#f1ead9" hair="#050404" scale={0.54} longHair />
+    </group>
+  )
+}
+
+function SeatedPerson({
+  position,
+  skin,
+  shirt,
+  hair,
+  scale = 1,
+  longHair = false,
+}: {
+  position: [number, number, number]
+  skin: string
+  shirt: string
+  hair: string
+  scale?: number
+  longHair?: boolean
+}) {
+  return (
+    <group position={position} scale={scale}>
+      <mesh castShadow position={[0, -0.12, 0.03]}>
+        <capsuleGeometry args={[0.18, 0.36, 8, 12]} />
+        <meshStandardMaterial color={shirt} roughness={0.54} />
+      </mesh>
+      <mesh castShadow position={[0, 0.24, 0]}>
+        <sphereGeometry args={[0.18, 22, 14]} />
+        <meshStandardMaterial color={skin} roughness={0.52} />
+      </mesh>
+      <mesh castShadow position={[0, 0.32, -0.035]}>
+        <sphereGeometry args={[0.19, 22, 12]} />
+        <meshStandardMaterial color={hair} roughness={0.76} />
+      </mesh>
+      {longHair && (
+        <mesh castShadow position={[0, 0.08, -0.12]}>
+          <capsuleGeometry args={[0.15, 0.42, 8, 12]} />
+          <meshStandardMaterial color={hair} roughness={0.8} />
         </mesh>
-        <mesh castShadow position={[0, 0.08, 0]}>
-          <sphereGeometry args={[0.16, 18, 12]} />
-          <meshStandardMaterial color="#c28d62" roughness={0.52} />
+      )}
+      {[-0.16, 0.16].map((x) => (
+        <mesh key={x} castShadow position={[x, -0.08, 0.08]} rotation={[0.35, 0, x > 0 ? -0.4 : 0.4]}>
+          <capsuleGeometry args={[0.035, 0.28, 6, 8]} />
+          <meshStandardMaterial color={skin} roughness={0.56} />
         </mesh>
-        <mesh castShadow position={[0, 0.14, -0.035]}>
-          <sphereGeometry args={[0.17, 18, 10]} />
-          <meshStandardMaterial color="#15120f" roughness={0.72} />
+      ))}
+    </group>
+  )
+}
+
+function StandingPerson({
+  position,
+  skin,
+  shirt,
+  pants,
+  hair,
+  scale = 1,
+  longHair = false,
+  pose = 0,
+}: {
+  position: [number, number, number]
+  skin: string
+  shirt: string
+  pants: string
+  hair: string
+  scale?: number
+  longHair?: boolean
+  pose?: number
+}) {
+  return (
+    <group position={position} scale={scale}>
+      <mesh castShadow position={[0, 1.22, 0]}>
+        <capsuleGeometry args={[0.22, 0.52, 10, 14]} />
+        <meshStandardMaterial color={shirt} roughness={0.52} />
+      </mesh>
+      <mesh castShadow position={[0, 1.68, 0]}>
+        <sphereGeometry args={[0.2, 24, 14]} />
+        <meshStandardMaterial color={skin} roughness={0.5} />
+      </mesh>
+      <mesh castShadow position={[0, 1.8, -0.045]}>
+        <sphereGeometry args={[0.21, 24, 12]} />
+        <meshStandardMaterial color={hair} roughness={0.76} />
+      </mesh>
+      {longHair && (
+        <mesh castShadow position={[0, 1.48, -0.12]}>
+          <capsuleGeometry args={[0.16, 0.58, 8, 12]} />
+          <meshStandardMaterial color={hair} roughness={0.8} />
         </mesh>
-      </group>
-      <group position={[0.38, 1.03, -0.42]}>
-        <mesh castShadow position={[0, -0.18, 0.02]}>
-          <boxGeometry args={[0.34, 0.28, 0.22]} />
-          <meshStandardMaterial color="#f1ead9" roughness={0.48} />
+      )}
+      {[-0.11, 0.11].map((x) => (
+        <mesh key={`leg-${x}`} castShadow position={[x, 0.58, 0]} rotation={[pose * (x > 0 ? 0.16 : -0.12), 0, 0]}>
+          <capsuleGeometry args={[0.07, 0.72, 8, 10]} />
+          <meshStandardMaterial color={pants} roughness={0.56} />
         </mesh>
-        <mesh castShadow position={[0, 0.08, 0]}>
-          <sphereGeometry args={[0.15, 18, 12]} />
-          <meshStandardMaterial color="#dfb58e" roughness={0.5} />
+      ))}
+      {[-0.28, 0.28].map((x) => (
+        <mesh key={`arm-${x}`} castShadow position={[x, 1.18, 0.02]} rotation={[0.25 + pose * 0.2, 0, x > 0 ? -0.42 : 0.42]}>
+          <capsuleGeometry args={[0.055, 0.5, 8, 10]} />
+          <meshStandardMaterial color={skin} roughness={0.54} />
         </mesh>
-        <mesh castShadow position={[0, 0.1, -0.08]}>
-          <sphereGeometry args={[0.19, 18, 12]} />
-          <meshStandardMaterial color="#070606" roughness={0.76} />
-        </mesh>
-        <mesh castShadow position={[0, -0.06, -0.13]}>
-          <boxGeometry args={[0.26, 0.38, 0.08]} />
-          <meshStandardMaterial color="#080707" roughness={0.78} />
-        </mesh>
-      </group>
+      ))}
     </group>
   )
 }
@@ -1557,6 +1628,39 @@ function CafePatios() {
           </mesh>
         </group>
       ))}
+    </group>
+  )
+}
+
+function CafeCoupleMoment() {
+  return (
+    <group position={[3.85, 0, FINISH_Z + 14]} rotation={[0, -0.18, 0]}>
+      <StandingPerson position={[-0.58, 0, 0.1]} skin="#c28d62" shirt="#23323a" pants="#15191c" hair="#15120f" scale={1.02} pose={0.4} />
+      <StandingPerson position={[0.56, 0, -0.08]} skin="#dfb58e" shirt="#f4eadc" pants="#2e3438" hair="#050404" scale={0.96} longHair pose={0.2} />
+      <mesh castShadow position={[0, 0.76, 0.5]}>
+        <cylinderGeometry args={[0.34, 0.34, 0.08, 28]} />
+        <meshStandardMaterial color="#3f3126" roughness={0.48} />
+      </mesh>
+      <mesh castShadow position={[0, 0.38, 0.5]}>
+        <cylinderGeometry args={[0.055, 0.055, 0.72, 12]} />
+        <meshStandardMaterial color="#242323" metalness={0.2} roughness={0.38} />
+      </mesh>
+      {[-0.12, 0.12].map((x) => (
+        <group key={x} position={[x, 0.87, 0.48]}>
+          <mesh castShadow>
+            <cylinderGeometry args={[0.045, 0.035, 0.12, 14]} />
+            <meshStandardMaterial color="#f4f0e2" roughness={0.38} />
+          </mesh>
+          <mesh position={[0, 0.075, 0]}>
+            <cylinderGeometry args={[0.05, 0.05, 0.018, 14]} />
+            <meshStandardMaterial color="#b5834c" roughness={0.42} />
+          </mesh>
+        </group>
+      ))}
+      <Text position={[0, 2.28, -0.12]} fontSize={0.22} color="#fff7db" anchorX="center" anchorY="middle">
+        date coffee stop
+      </Text>
+      <pointLight position={[0, 2.1, 0.1]} intensity={3.2} distance={6} color="#ffdca0" />
     </group>
   )
 }
