@@ -190,9 +190,10 @@ function AudioDirector() {
   const musicRef = useRef<{
     master: GainNode
     pad: Array<{ oscillator: OscillatorNode; gain: GainNode }>
-    shimmer: OscillatorNode
-    shimmerGain: GainNode
+    warmth: BiquadFilterNode
   } | null>(null)
+  const grooveTimerRef = useRef<number | null>(null)
+  const grooveStepRef = useRef(0)
   const lastCollisionRef = useRef(0)
 
   function ensureAudioContext() {
@@ -211,42 +212,109 @@ function AudioDirector() {
     master.gain.value = 0
     master.connect(context.destination)
 
-    const padNotes = [196, 246.94, 293.66, 369.99]
+    const warmth = context.createBiquadFilter()
+    warmth.type = 'lowpass'
+    warmth.frequency.value = 1450
+    warmth.Q.value = 0.55
+    warmth.connect(master)
+
+    const padNotes = [174.61, 220, 261.63, 329.63]
     const pad = padNotes.map((frequency, index) => {
       const oscillator = context.createOscillator()
       const gain = context.createGain()
-      oscillator.type = index % 2 ? 'sine' : 'triangle'
+      oscillator.type = index % 2 ? 'triangle' : 'sine'
       oscillator.frequency.value = frequency
-      gain.gain.value = 0.012
+      gain.gain.value = 0.007
       oscillator.connect(gain)
-      gain.connect(master)
+      gain.connect(warmth)
       oscillator.start()
       return { oscillator, gain }
     })
 
-    const shimmer = context.createOscillator()
-    const shimmerGain = context.createGain()
-    shimmer.type = 'sine'
-    shimmer.frequency.value = 880
-    shimmerGain.gain.value = 0.002
-    shimmer.connect(shimmerGain)
-    shimmerGain.connect(master)
-    shimmer.start()
-
-    musicRef.current = { master, pad, shimmer, shimmerGain }
+    musicRef.current = { master, pad, warmth }
     return musicRef.current
+  }
+
+  function playCafeTone(context: AudioContext, destination: AudioNode, frequency: number, start: number, duration: number, gainValue: number, type: OscillatorType = 'triangle') {
+    const oscillator = context.createOscillator()
+    const gain = context.createGain()
+    const filter = context.createBiquadFilter()
+    oscillator.type = type
+    oscillator.frequency.value = frequency
+    filter.type = 'lowpass'
+    filter.frequency.value = 1700
+    filter.Q.value = 0.42
+    gain.gain.setValueAtTime(0.0001, start)
+    gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.018)
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
+    oscillator.connect(filter)
+    filter.connect(gain)
+    gain.connect(destination)
+    oscillator.start(start)
+    oscillator.stop(start + duration + 0.03)
+  }
+
+  function playSoftNoise(context: AudioContext, destination: AudioNode, start: number, duration: number, gainValue: number, tone: 'hat' | 'brush') {
+    const buffer = context.createBuffer(1, Math.max(1, Math.floor(context.sampleRate * duration)), context.sampleRate)
+    const data = buffer.getChannelData(0)
+    for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length)
+    const source = context.createBufferSource()
+    const filter = context.createBiquadFilter()
+    const gain = context.createGain()
+    filter.type = tone === 'hat' ? 'highpass' : 'bandpass'
+    filter.frequency.value = tone === 'hat' ? 5200 : 900
+    filter.Q.value = tone === 'hat' ? 0.7 : 1.2
+    gain.gain.setValueAtTime(0.0001, start)
+    gain.gain.exponentialRampToValueAtTime(gainValue, start + 0.012)
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
+    source.buffer = buffer
+    source.connect(filter)
+    filter.connect(gain)
+    gain.connect(destination)
+    source.start(start)
+  }
+
+  function startCafeGroove(context: AudioContext) {
+    const music = ensureMusic(context)
+    if (grooveTimerRef.current !== null) return
+    grooveStepRef.current = 0
+    const chords = [
+      [220, 261.63, 329.63],
+      [196, 246.94, 293.66],
+      [174.61, 220, 261.63],
+      [196, 246.94, 329.63],
+    ]
+    grooveTimerRef.current = window.setInterval(() => {
+      const step = grooveStepRef.current
+      const now = context.currentTime + 0.025
+      if (step % 8 === 0) {
+        chords[(step / 8) % chords.length].forEach((note, index) => playCafeTone(context, music.master, note * 2, now + index * 0.025, 0.42, 0.012, 'triangle'))
+      }
+      if (step % 4 === 0) playCafeTone(context, music.master, 82.41, now, 0.13, 0.018, 'sine')
+      if (step % 2 === 1) playSoftNoise(context, music.master, now, 0.055, 0.007, 'hat')
+      if (step % 8 === 5) playSoftNoise(context, music.master, now, 0.16, 0.01, 'brush')
+      grooveStepRef.current = (step + 1) % 32
+    }, 360)
+  }
+
+  function stopCafeGroove() {
+    if (grooveTimerRef.current === null) return
+    window.clearInterval(grooveTimerRef.current)
+    grooveTimerRef.current = null
   }
 
   useEffect(() => {
     if (!soundEnabled || status !== 'running') {
       engineGainRef.current?.gain.setTargetAtTime(0, contextRef.current?.currentTime ?? 0, 0.05)
       musicRef.current?.master.gain.setTargetAtTime(0, contextRef.current?.currentTime ?? 0, 0.18)
+      stopCafeGroove()
       return
     }
 
     const context = ensureAudioContext()
     if (!context) return
     const music = ensureMusic(context)
+    startCafeGroove(context)
 
     if (!engineRef.current) {
       const oscillator = context.createOscillator()
@@ -261,15 +329,16 @@ function AudioDirector() {
     }
 
     const relaxedMood = Math.max(0, 100 - stress) / 100
-    engineRef.current.frequency.setTargetAtTime(42 + speed * 1.15, context.currentTime, 0.16)
-    engineGainRef.current?.gain.setTargetAtTime(0.006 + Math.min(0.024, speed / 1400), context.currentTime, 0.12)
-    music.master.gain.setTargetAtTime(0.26 + relaxedMood * 0.08, context.currentTime, 0.3)
+    engineRef.current.frequency.setTargetAtTime(36 + speed * 0.85, context.currentTime, 0.16)
+    engineGainRef.current?.gain.setTargetAtTime(0.004 + Math.min(0.014, speed / 1800), context.currentTime, 0.12)
+    music.master.gain.setTargetAtTime(0.18 + relaxedMood * 0.06, context.currentTime, 0.3)
     music.pad.forEach(({ oscillator, gain }, index) => {
-      const drift = Math.sin(context.currentTime * (0.12 + index * 0.025)) * (0.5 + index * 0.12)
+      const drift = Math.sin(context.currentTime * (0.08 + index * 0.018)) * (0.22 + index * 0.06)
       oscillator.detune.setTargetAtTime(drift, context.currentTime, 0.25)
-      gain.gain.setTargetAtTime(0.008 + relaxedMood * 0.008 + Math.min(0.004, speed / 9000), context.currentTime, 0.35)
+      gain.gain.setTargetAtTime(0.004 + relaxedMood * 0.004 + Math.min(0.002, speed / 10000), context.currentTime, 0.35)
     })
-    music.shimmerGain.gain.setTargetAtTime(speed > 8 ? 0.0025 + relaxedMood * 0.002 : 0.001, context.currentTime, 0.35)
+    // WebAudio nodes and timers are intentionally held in refs; recreating the groove callbacks on every frame would restart the music.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [soundEnabled, speed, status, stress])
 
   useEffect(() => {
@@ -281,19 +350,8 @@ function AudioDirector() {
     const context = ensureAudioContext()
     if (!context) return
 
-    ;[659.25, 783.99].forEach((frequency, index) => {
-      const oscillator = context.createOscillator()
-      const gain = context.createGain()
-      oscillator.type = 'sine'
-      oscillator.frequency.value = frequency
-      gain.gain.setValueAtTime(0.0001, context.currentTime)
-      gain.gain.exponentialRampToValueAtTime(index ? 0.035 : 0.026, context.currentTime + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.42 + index * 0.08)
-      oscillator.connect(gain)
-      gain.connect(context.destination)
-      oscillator.start(context.currentTime + index * 0.035)
-      oscillator.stop(context.currentTime + 0.55 + index * 0.08)
-    })
+    playSoftNoise(context, context.destination, context.currentTime, 0.12, 0.012, 'brush')
+    ;[392, 523.25].forEach((frequency, index) => playCafeTone(context, context.destination, frequency, context.currentTime + index * 0.045, 0.28, index ? 0.018 : 0.014, 'triangle'))
     lastCollisionRef.current = collisions
   }, [collisions, soundEnabled])
 
