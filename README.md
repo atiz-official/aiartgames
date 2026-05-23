@@ -4,12 +4,13 @@ Browser-playable 3D driving prototype built with Vite, React, TypeScript, React 
 
 ## Goal
 
-Drive a glacier-blue electric SUV through fictional sunny Thong Lor / Sukhumvit cafe traffic and find a scenic cafe with genuinely good coffee before the best table is gone.
+Drive a glacier-blue electric SUV through a fictional sunny Thong Lor / Sukhumvit cafe street and choose a scenic cafe with genuinely good coffee. The current loop is a relaxed cruise, not an obstruction-dodging race.
 
 ## Controls
 
 - `WASD` or arrow keys: drive and steer
 - `Space`: brake
+- Slow down near the scenic cafe zone to park and finish the cruise
 - `R`: restart
 - `Share shot`: export/share a screenshot
 - `Record clip`: record an 8 second `.webm` canvas clip

@@ -5,7 +5,7 @@ import type { RefObject } from 'react'
 import { Group, MathUtils, Mesh, MeshStandardMaterial, PerspectiveCamera as ThreePerspectiveCamera, Vector3 } from 'three'
 import { clone as cloneSkeleton } from 'three/examples/jsm/utils/SkeletonUtils.js'
 import { FINISH_Z, RUN_SECONDS, useGameStore, type GameStatus, type Objectives } from '../game/store'
-import { obstacles, traffic, type ObstacleKind } from '../game/obstacles'
+import { traffic } from '../game/traffic'
 
 const LANE_WIDTH = 4.1
 const ROAD_WIDTH = 14.5
@@ -13,6 +13,7 @@ const ROAD_EDGE_LIMIT = ROAD_WIDTH / 2 - 1.55
 const SHOULDER_STRESS_LIMIT = ROAD_WIDTH / 2 - 2.4
 const CAMERA_OFFSET = new Vector3(0, 4.25, -8.6)
 const DEMO_MODE = new URLSearchParams(window.location.search).get('demo') === '1'
+const CAFE_STOP_ZONE = FINISH_Z * 0.72
 
 type PlayerState = {
   x: number
@@ -30,6 +31,7 @@ type PlayerState = {
   routePhase: string
   cleanStreak: number
   runTime: number
+  cafesSeen: Set<string>
   nearMisses: Set<string>
 }
 
@@ -55,20 +57,21 @@ function freshPlayer(): PlayerState {
     collisions: 0,
     collisionCooldown: 0,
     shake: 0,
-    message: 'Find the cafe route.',
-    routePhase: 'Thong Lo cafe row',
+    message: 'Cruise and look for the right cafe.',
+    routePhase: 'Thong Lo morning cruise',
     cleanStreak: 0,
     runTime: 0,
+    cafesSeen: new Set<string>(),
     nearMisses: new Set<string>(),
   }
 }
 
 function routePhaseFor(z: number) {
-  if (z > FINISH_Z * 0.82) return 'Scenic cafe approach'
-  if (z > FINISH_Z * 0.58) return 'Community mall crawl'
-  if (z > FINISH_Z * 0.32) return 'Soi 55 cafe traffic'
-  if (z > FINISH_Z * 0.14) return 'Boutique condo lane'
-  return 'Thong Lo cafe row'
+  if (z > FINISH_Z * 0.78) return 'Quiet cafe terrace'
+  if (z > FINISH_Z * 0.58) return 'Community mall cafes'
+  if (z > FINISH_Z * 0.34) return 'Soi 55 brunch row'
+  if (z > FINISH_Z * 0.16) return 'Condo and cafe lane'
+  return 'Thong Lo morning cruise'
 }
 
 export function GameScene() {
@@ -140,85 +143,100 @@ function RoadRunScene() {
       p.routePhase = routePhaseFor(p.z)
 
       const offLane = Math.abs(p.x) > SHOULDER_STRESS_LIMIT
-      let nearHazards = 0
-      let hardHitThisFrame = false
-      for (const item of [...obstacles, ...traffic]) {
-        const itemX = laneX(item.lane) + ('xOffset' in item ? item.xOffset ?? 0 : 0)
-        const itemZ = 'speed' in item ? trafficZ(item.z, item.speed, state.clock.elapsedTime) : item.z
+      let trafficPressure = 0
+      let brushedTraffic = false
+      for (const item of traffic) {
+        const itemX = laneX(item.lane)
+        const itemZ = trafficZ(item.z, item.speed, state.clock.elapsedTime)
         const dz = Math.abs(itemZ - p.z)
         const dx = Math.abs(itemX - p.x)
-        const isHardHit = dz < 3.2 && dx < 1.65
+        const isBrush = dz < 3.0 && dx < 1.52
 
-        if (isHardHit && p.collisionCooldown <= 0) {
-          const impactKind = 'kind' in item ? item.kind : 'traffic'
-          p.speed *= -0.22
-          p.stress += 17
+        if (isBrush && p.collisionCooldown <= 0) {
+          p.speed *= 0.62
+          p.stress += 5
           p.combo = 1
           p.collisions += 1
           p.collisionCooldown = 0.85
-          p.shake = 1
-          p.message = impactKind === 'traffic' ? 'Bumped traffic. Keep the cafe mood.' : 'Bad lane choice. Recover smoothly.'
-          hardHitThisFrame = true
+          p.shake = 0.24
+          p.message = 'Easy. Normal Thonglor traffic, no need to force it.'
+          brushedTraffic = true
         } else if (dz < 4.2 && dx < 2.35) {
-          nearHazards += 28 * delta
+          trafficPressure += 4 * delta
         } else if (dz < 8.5 && dx < 3.25) {
-          nearHazards += 7 * delta
+          trafficPressure += 1.6 * delta
         }
 
-        const nearMissKey = `${item.id}:${'kind' in item ? item.kind : 'traffic'}`
+        const nearMissKey = `${item.id}:traffic`
         if (itemZ < p.z - 1 && itemZ > p.z - 5 && dx < 2.8 && !p.nearMisses.has(nearMissKey)) {
           p.nearMisses.add(nearMissKey)
-          p.combo = Math.min(5, p.combo + 0.25)
-          p.score += Math.round(120 * p.combo)
-          p.message = 'Near miss bonus.'
+          p.combo = Math.min(4, p.combo + 0.12)
+          p.score += Math.round(30 * p.combo)
+          p.message = 'Flowed through traffic smoothly.'
+        }
+      }
+
+      const cafeMilestones = [
+        { id: 'garden', z: FINISH_Z * 0.22, label: 'Garden cafe spotted.' },
+        { id: 'brunch', z: FINISH_Z * 0.44, label: 'Brunch place looks busy.' },
+        { id: 'terrace', z: CAFE_STOP_ZONE, label: 'This scenic cafe has the right vibe.' },
+      ]
+      for (const cafe of cafeMilestones) {
+        if (p.z > cafe.z && !p.cafesSeen.has(cafe.id)) {
+          p.cafesSeen.add(cafe.id)
+          p.combo = Math.min(4, p.combo + 0.35)
+          p.score += 400
+          p.message = cafe.label
         }
       }
 
       p.stuckTime = Math.abs(p.speed) < 0.35 && keys.forward ? p.stuckTime + delta : 0
-      const holdingGoodLine = Math.abs(p.x) < LANE_WIDTH * 0.42 && nearHazards < 0.01 && p.speed > 8 && !hardHitThisFrame
+      const scenicSpeed = p.speed > 6 && p.speed < 27
+      const holdingGoodLine = Math.abs(p.x) < LANE_WIDTH * 0.62 && scenicSpeed && !brushedTraffic
       p.cleanStreak = holdingGoodLine ? Math.min(9.9, p.cleanStreak + delta) : Math.max(0, p.cleanStreak - delta * 1.8)
-      const cleanRecovery = p.cleanStreak > 1.2 ? 5.2 * delta : 0
-      p.stress += nearHazards + (offLane ? 12 * delta : -3 * delta) + (p.stuckTime > 2.2 ? 9 * delta : 0) - cleanRecovery
+      const cleanRecovery = p.cleanStreak > 1.2 ? 6.8 * delta : 0
+      const cafeMoodLift = p.cafesSeen.size * 0.55 * delta
+      p.stress += trafficPressure + (offLane ? 7 * delta : -4.5 * delta) + (p.stuckTime > 4.5 ? 2 * delta : 0) - cleanRecovery - cafeMoodLift
       p.stress = MathUtils.clamp(p.stress, 0, 100)
-      p.score += Math.max(0, p.speed) * delta * (0.7 + p.combo * 0.16)
-      if (p.cleanStreak > 2.5) p.score += delta * 18 * Math.min(3, p.cleanStreak / 2.5)
-      if (offLane) p.message = 'Careful. This is not a parking lane.'
-      if (p.stuckTime > 2.2) p.message = 'Keep moving. The good table will go.'
-      if (p.cleanStreak > 3.5 && p.runTime % 4 < delta) p.message = 'Smooth cafe cruise.'
+      p.score += Math.max(0, p.speed) * delta * (0.35 + p.combo * 0.08)
+      if (p.cleanStreak > 2.5) p.score += delta * 14 * Math.min(3, p.cleanStreak / 2.5)
+      if (offLane) p.message = 'Stay in the lane and enjoy the street.'
+      if (p.stuckTime > 4.5) p.message = 'Take it easy. This is a cafe cruise.'
+      if (p.cleanStreak > 3.5 && p.runTime % 4 < delta) p.message = 'Smooth Thonglor cruise.'
 
       const objectives: Objectives = {
-        survive: p.z > 90 || p.score > 300,
-        dodgeConcrete: p.nearMisses.size > 1,
-        exitReady: p.z > FINISH_Z * 0.78,
-        reachNursery: p.z >= FINISH_Z,
-        grabChild: false,
+        survive: p.z > 80 || p.score > 240,
+        dodgeConcrete: p.cafesSeen.size >= 1,
+        exitReady: p.cafesSeen.size >= 2,
+        reachNursery: p.z >= CAFE_STOP_ZONE,
+        grabChild: p.z >= CAFE_STOP_ZONE && p.speed < 8,
         escapeNursery: false,
       }
 
       let nextStatus: GameStatus = status
-      if (p.z >= FINISH_Z) {
+      if (p.z >= CAFE_STOP_ZONE && p.speed < 8) {
         setTelemetry({
           stress: p.stress,
           timeLeft: p.timeLeft,
-          score: Math.round(p.score + p.timeLeft * 7),
-          distance: 1,
-          routePhase: 'Found the scenic cafe',
-          message: 'Cafe found. Order the good coffee.',
+          score: Math.round(p.score + Math.max(0, 100 - p.stress) * 12),
+          distance: Math.min(1, p.z / FINISH_Z),
+          routePhase: 'Parked at a scenic cafe',
+          message: 'Parked gently. Time for good coffee.',
           objectives: {
             survive: true,
             dodgeConcrete: true,
             exitReady: true,
             reachNursery: true,
-            grabChild: false,
+            grabChild: true,
             escapeNursery: false,
           },
         })
         finishRun()
         return
       }
-      if (p.timeLeft <= 0 || p.stress >= 100) {
+      if (p.stress >= 100) {
         nextStatus = 'lost'
-        p.message = p.stress >= 100 ? 'Traffic mood ruined.' : 'The cafe seat is gone.'
+        p.message = 'Cafe mood ruined. Reset and cruise softer.'
       }
 
       if (nextStatus !== 'running') {
@@ -271,7 +289,6 @@ function RoadRunScene() {
       <City />
       <CafeStorefronts />
       <Traffic />
-      <Hazards />
       <ScenicCafe />
       <GlacierBlueEvSuv refObject={ev} />
     </>
@@ -1158,86 +1175,6 @@ function TrafficVehicle({ car }: { car: (typeof traffic)[number] }) {
       </mesh>
       <pointLight position={[0, 0.45, -car.length / 2 - 0.3]} intensity={3.2} distance={9} color="#ff2a1f" />
     </group>
-  )
-}
-
-function Hazards() {
-  return (
-    <group>
-      {obstacles.map((obstacle) => (
-        <Hazard key={obstacle.id} kind={obstacle.kind} position={[laneX(obstacle.lane) + (obstacle.xOffset ?? 0), 0.38, obstacle.z]} />
-      ))}
-    </group>
-  )
-}
-
-function Hazard({ kind, position }: { kind: ObstacleKind; position: [number, number, number] }) {
-  const hazardRef = useRef<Group>(null)
-
-  useFrame((state) => {
-    if (hazardRef.current && kind === 'deliveryBike') {
-      hazardRef.current.rotation.z = Math.sin(state.clock.elapsedTime * 5.2 + position[2]) * 0.035
-    }
-  })
-
-  if (kind === 'cone') {
-    return (
-      <mesh castShadow position={position}>
-        <coneGeometry args={[0.55, 1.2, 4]} />
-        <meshStandardMaterial color="#ff6a22" emissive="#7a1d07" emissiveIntensity={0.25} />
-      </mesh>
-    )
-  }
-
-  if (kind === 'deliveryBike') {
-    return (
-      <group ref={hazardRef} position={position} rotation={[0, 0.18, 0]}>
-        <mesh castShadow position={[0, 0.45, 0]}>
-          <boxGeometry args={[0.42, 0.3, 1.45]} />
-          <meshStandardMaterial color="#e34a2f" roughness={0.42} />
-        </mesh>
-        {[-0.58, 0.58].map((z) => (
-          <mesh key={z} castShadow position={[0, 0.18, z]} rotation={[Math.PI / 2, 0, 0]}>
-            <cylinderGeometry args={[0.26, 0.26, 0.11, 18]} />
-            <meshStandardMaterial color="#08090b" roughness={0.46} />
-          </mesh>
-        ))}
-        <mesh castShadow position={[0, 0.92, -0.16]}>
-          <boxGeometry args={[0.32, 0.52, 0.24]} />
-          <meshStandardMaterial color="#1c2f3c" roughness={0.58} />
-        </mesh>
-        <mesh castShadow position={[0, 1.27, -0.18]}>
-          <sphereGeometry args={[0.18, 18, 10]} />
-          <meshStandardMaterial color="#2b2520" roughness={0.62} />
-        </mesh>
-      </group>
-    )
-  }
-
-  if (kind === 'valetStand') {
-    return (
-      <group position={position} rotation={[0, -0.25, 0]}>
-        <mesh castShadow position={[0, 0.48, 0]}>
-          <boxGeometry args={[0.12, 0.96, 0.12]} />
-          <meshStandardMaterial color="#453624" roughness={0.5} />
-        </mesh>
-        <mesh castShadow position={[0, 1.02, 0]}>
-          <boxGeometry args={[1.04, 0.56, 0.1]} />
-          <meshStandardMaterial color="#fff4ce" emissive="#c58d35" emissiveIntensity={0.22} roughness={0.3} />
-        </mesh>
-        <mesh castShadow position={[0, 0.08, 0]}>
-          <boxGeometry args={[0.92, 0.16, 0.58]} />
-          <meshStandardMaterial color="#795c38" roughness={0.55} />
-        </mesh>
-      </group>
-    )
-  }
-
-  return (
-    <mesh castShadow position={position}>
-      <boxGeometry args={kind === 'truck' ? [2.6, 1.55, 5.8] : kind === 'barrier' ? [3.2, 1.0, 1.05] : [2.2, 0.9, 3.9]} />
-      <meshStandardMaterial color={kind === 'truck' ? '#d7dee4' : kind === 'barrier' ? '#d9572a' : '#314354'} roughness={0.55} metalness={0.1} />
-    </mesh>
   )
 }
 
