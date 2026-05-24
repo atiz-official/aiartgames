@@ -1150,119 +1150,8 @@ function ThongLorIdentity() {
 function GlacierBlueEvSuv({ refObject }: { refObject: RefObject<Group | null> }) {
   return (
     <group ref={refObject}>
-      <RoundedBox castShadow receiveShadow position={[0, 0.47, -0.05]} args={[2.58, 0.52, 4.72]} radius={0.42} smoothness={16}>
-        <meshStandardMaterial color="#a9def0" roughness={0.11} metalness={0.58} envMapIntensity={1.4} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.58, 1.62]} args={[2.1, 0.26, 1.36]} radius={0.36} smoothness={14}>
-        <meshStandardMaterial color="#b9e7f5" roughness={0.1} metalness={0.55} envMapIntensity={1.35} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.64, -1.86]} args={[2.46, 0.44, 1.0]} radius={0.32} smoothness={14}>
-        <meshStandardMaterial color="#93d2e8" roughness={0.11} metalness={0.56} envMapIntensity={1.45} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 1.03, -0.38]} args={[1.86, 0.72, 2.58]} radius={0.5} smoothness={18}>
-        <meshStandardMaterial color="#081217" transparent opacity={0.26} roughness={0.02} metalness={0.78} envMapIntensity={1.7} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 1.3, -0.42]} args={[1.54, 0.09, 1.82]} radius={0.09} smoothness={5}>
-        <meshStandardMaterial color="#02090d" roughness={0.015} metalness={0.9} envMapIntensity={1.8} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.96, 0.94]} rotation={[-0.25, 0, 0]} args={[1.58, 0.48, 0.08]} radius={0.07} smoothness={4}>
-        <meshStandardMaterial color="#ecfdff" transparent opacity={0.42} roughness={0.015} metalness={0.74} envMapIntensity={1.8} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 1.04, -1.62]} rotation={[0.18, 0, 0]} args={[1.64, 0.62, 0.09]} radius={0.08} smoothness={5}>
-        <meshStandardMaterial color="#ecfdff" transparent opacity={0.48} roughness={0.015} metalness={0.76} envMapIntensity={1.9} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 1.41, -1.95]} args={[1.74, 0.12, 0.24]} radius={0.06} smoothness={5}>
-        <meshStandardMaterial color="#101820" roughness={0.12} metalness={0.58} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.74, -2.4]} args={[2.18, 0.94, 0.18]} radius={0.12} smoothness={8}>
-        <meshStandardMaterial color="#8fd0e8" roughness={0.12} metalness={0.56} envMapIntensity={1.45} />
-      </RoundedBox>
-      <RoundedBox position={[0, 0.96, -2.505]} args={[1.34, 0.38, 0.035]} radius={0.035} smoothness={3}>
-        <meshStandardMaterial color="#061015" transparent opacity={0.5} roughness={0.02} metalness={0.82} envMapIntensity={1.8} />
-      </RoundedBox>
-      <RoundedBox position={[0, 0.52, -2.52]} args={[0.44, 0.22, 0.04]} radius={0.025} smoothness={3}>
-        <meshStandardMaterial color="#f6fafb" roughness={0.28} metalness={0.12} />
-      </RoundedBox>
-      <Text position={[0, 0.52, -2.545]} fontSize={0.08} color="#121212" anchorX="center" anchorY="middle">
-        BKK EV
-      </Text>
-      {[-1.12, 1.12].map((x) => (
-        <group key={`side-detail-${x}`} position={[x, 0, 0]}>
-          <RoundedBox castShadow position={[0, 0.73, -0.38]} args={[0.045, 0.44, 1.28]} radius={0.04} smoothness={3}>
-            <meshStandardMaterial color="#0b1419" roughness={0.05} metalness={0.66} />
-          </RoundedBox>
-          <mesh castShadow position={[0, 0.55, 0.38]}>
-            <boxGeometry args={[0.035, 0.035, 0.44]} />
-            <meshStandardMaterial color="#eafcff" roughness={0.16} metalness={0.42} />
-          </mesh>
-          <mesh castShadow position={[0, 0.55, -0.95]}>
-            <boxGeometry args={[0.035, 0.035, 0.34]} />
-            <meshStandardMaterial color="#eafcff" roughness={0.16} metalness={0.42} />
-          </mesh>
-        </group>
-      ))}
-      <CabinCouple />
-      <mesh position={[0, 0.93, 0.18]} rotation={[-0.06, 0, 0]}>
-        <boxGeometry args={[1.9, 0.018, 3.45]} />
-        <meshStandardMaterial color="#eaffff" transparent opacity={0.16} roughness={0.08} metalness={0.72} />
-      </mesh>
-      <RoundedBox castShadow position={[0, 0.29, 2.18]} args={[2.2, 0.18, 0.26]} radius={0.14} smoothness={6}>
-        <meshStandardMaterial color="#7bc9e2" roughness={0.11} metalness={0.54} envMapIntensity={1.3} />
-      </RoundedBox>
-      <RoundedBox castShadow position={[0, 0.26, -2.2]} args={[2.42, 0.24, 0.32]} radius={0.16} smoothness={7}>
-        <meshStandardMaterial color="#172027" roughness={0.18} metalness={0.55} />
-      </RoundedBox>
-      {[-1.22, 1.22].map((x) => (
-        <RoundedBox key={`mirror-${x}`} castShadow position={[x, 0.96, 0.48]} args={[0.18, 0.12, 0.36]} radius={0.06} smoothness={4}>
-          <meshStandardMaterial color="#0d151a" roughness={0.18} metalness={0.46} />
-        </RoundedBox>
-      ))}
-      {[[-1.16, -1.58], [1.16, -1.58], [-1.16, 1.48], [1.16, 1.48]].map(([x, z]) => (
-        <group key={`${x}-${z}`} position={[x, 0.31, z]} rotation={[Math.PI / 2, 0, 0]}>
-          <mesh castShadow>
-            <cylinderGeometry args={[0.45, 0.45, 0.3, 40]} />
-            <meshStandardMaterial color="#050607" roughness={0.45} />
-          </mesh>
-          <mesh position={[0, 0, 0.15]}>
-            <cylinderGeometry args={[0.24, 0.24, 0.045, 32]} />
-            <meshStandardMaterial color="#c3ccd0" roughness={0.18} metalness={0.58} />
-          </mesh>
-          {[0, 1, 2, 3, 4].map((spoke) => (
-            <mesh key={spoke} position={[0, 0, 0.18]} rotation={[0, 0, (spoke * Math.PI) / 5]}>
-              <boxGeometry args={[0.04, 0.32, 0.024]} />
-              <meshStandardMaterial color="#eef3f5" roughness={0.16} metalness={0.72} />
-            </mesh>
-          ))}
-        </group>
-      ))}
-      {[-1.09, 1.09].map((x) =>
-        [-1.48, 1.48].map((z) => (
-          <mesh key={`arch-${x}-${z}`} castShadow position={[x, 0.34, z]} rotation={[0, Math.PI / 2, 0]}>
-            <torusGeometry args={[0.48, 0.045, 8, 28, Math.PI]} />
-            <meshStandardMaterial color="#7bbbd3" roughness={0.17} metalness={0.36} />
-          </mesh>
-        )),
-      )}
-      <mesh position={[0, 0.6, 2.34]}>
-        <boxGeometry args={[1.72, 0.045, 0.035]} />
-        <meshStandardMaterial color="#d9fbff" emissive="#b7efff" emissiveIntensity={2.1} />
-      </mesh>
-      {[-0.88, 0.88].map((x) => (
-        <mesh key={`headlight-${x}`} position={[x, 0.55, 2.32]}>
-          <boxGeometry args={[0.44, 0.08, 0.04]} />
-          <meshStandardMaterial color="#eefcff" emissive="#ccf4ff" emissiveIntensity={2.5} />
-        </mesh>
-      ))}
-      <mesh position={[0, 0.77, -2.56]}>
-        <boxGeometry args={[1.92, 0.045, 0.035]} />
-        <meshStandardMaterial color="#ff2430" emissive="#ff1d2b" emissiveIntensity={3.8} />
-      </mesh>
-      {[-0.9, 0.9].map((x) => (
-        <mesh key={`rear-claw-${x}`} position={[x, 0.68, -2.565]}>
-          <boxGeometry args={[0.34, 0.08, 0.035]} />
-          <meshStandardMaterial color="#ff3842" emissive="#ff2430" emissiveIntensity={3.2} />
-        </mesh>
-      ))}
+      <RealVehicleModel />
+      <AssetCabinCouple />
       <pointLight position={[-0.8, 0.45, 2.42]} intensity={4.8} distance={12} color="#d9fbff" />
       <pointLight position={[0.8, 0.45, 2.42]} intensity={4.8} distance={12} color="#d9fbff" />
       <pointLight position={[-0.78, 0.52, -2.38]} intensity={5} distance={8} color="#ff2222" />
@@ -1272,118 +1161,102 @@ function GlacierBlueEvSuv({ refObject }: { refObject: RefObject<Group | null> })
   )
 }
 
-function CabinCouple() {
+function assetUrl(path: string) {
+  return `${import.meta.env.BASE_URL}${path}`
+}
+
+function RealVehicleModel() {
+  const gltf = useGLTF(assetUrl('models/external/real-car.glb'))
+  const model = useMemo(() => {
+    const clone = cloneSkeleton(gltf.scene)
+    clone.traverse((child) => {
+      if (!(child instanceof Mesh)) return
+      child.castShadow = true
+      child.receiveShadow = true
+      const materials = Array.isArray(child.material) ? child.material : [child.material]
+      materials.forEach((material) => {
+        if (!(material instanceof MeshStandardMaterial)) return
+        material.envMapIntensity = 1.45
+        if (material.name === 'Body_Color') {
+          material.color.set('#9ed9ee')
+          material.roughness = 0.16
+          material.metalness = 0.62
+        }
+        if (material.name === 'Glass_Gray') {
+          material.color.set('#dffbff')
+          material.transparent = true
+          material.opacity = 0.42
+          material.roughness = 0.02
+          material.metalness = 0.75
+        }
+      })
+    })
+    return clone
+  }, [gltf.scene])
+
   return (
-    <group position={[0, 0, -0.16]}>
-      {[-0.46, 0.46].map((x) => (
-        <group key={`front-seat-${x}`} position={[x, 0.58, -0.64]}>
-          <RoundedBox castShadow args={[0.44, 0.72, 0.34]} radius={0.08} smoothness={5}>
-            <meshStandardMaterial color="#12171b" roughness={0.52} metalness={0.12} />
-          </RoundedBox>
-          <RoundedBox castShadow position={[0, -0.22, 0.28]} args={[0.46, 0.16, 0.64]} radius={0.08} smoothness={5}>
-            <meshStandardMaterial color="#171d21" roughness={0.5} metalness={0.12} />
-          </RoundedBox>
-        </group>
-      ))}
-      <SeatedPerson
-        position={[0.42, 0.93, -0.54]}
-        skin="#c28d62"
-        shirt="#263338"
-        hair="#15120f"
-        scale={0.72}
-        driver
-      />
-      <SeatedPerson
-        position={[-0.42, 0.91, -0.58]}
-        skin="#dfb58e"
-        shirt="#f1ead9"
-        hair="#050404"
-        scale={0.68}
-        longHair
-      />
-      <mesh castShadow position={[0.44, 0.78, 0.08]} rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[0.16, 0.018, 8, 28]} />
-        <meshStandardMaterial color="#050607" roughness={0.42} metalness={0.28} />
-      </mesh>
-      <mesh castShadow position={[0.44, 0.76, -0.02]} rotation={[0.2, 0, 0]}>
-        <cylinderGeometry args={[0.018, 0.018, 0.2, 10]} />
-        <meshStandardMaterial color="#0a0d0f" roughness={0.36} metalness={0.4} />
-      </mesh>
-      <RoundedBox position={[0, 1.18, -1.46]} args={[1.28, 0.48, 0.035]} radius={0.03} smoothness={3}>
-        <meshStandardMaterial color="#e8fdff" transparent opacity={0.22} roughness={0.02} metalness={0.76} />
+    <group position={[0, -0.02, 0]} scale={[1.1, 1.08, 1.1]}>
+      <primitive object={model} />
+      <RoundedBox position={[0, 0.54, -2.54]} args={[0.48, 0.22, 0.035]} radius={0.025} smoothness={3}>
+        <meshStandardMaterial color="#f8fafb" roughness={0.28} metalness={0.12} />
       </RoundedBox>
+      <Text position={[0, 0.54, -2.565]} fontSize={0.08} color="#161616" anchorX="center" anchorY="middle">
+        BKK EV
+      </Text>
+      <mesh position={[0, 0.75, -2.58]}>
+        <boxGeometry args={[1.72, 0.045, 0.035]} />
+        <meshStandardMaterial color="#ff2430" emissive="#ff1d2b" emissiveIntensity={3.6} />
+      </mesh>
     </group>
   )
 }
 
-function SeatedPerson({
-  position,
-  skin,
-  shirt,
-  hair,
-  scale = 1,
-  longHair = false,
-  driver = false,
-}: {
-  position: [number, number, number]
-  skin: string
-  shirt: string
-  hair: string
-  scale?: number
-  longHair?: boolean
-  driver?: boolean
-}) {
+function AssetCabinCouple() {
   return (
-    <group position={position} scale={scale}>
-      <mesh castShadow position={[0, -0.2, 0.02]} rotation={[0.04, 0, 0]}>
-        <capsuleGeometry args={[0.19, 0.5, 10, 16]} />
-        <meshStandardMaterial color={shirt} roughness={0.54} />
+    <group position={[0, 0, -0.1]}>
+      <AssetSeatedHuman model="xbot" position={[0.37, 0.82, -0.54]} scale={34} shirt="#263338" skin="#c28d62" />
+      <AssetSeatedHuman model="michelle" position={[-0.37, 0.8, -0.58]} scale={33} shirt="#f1ead9" skin="#dfb58e" />
+      <mesh castShadow position={[0.38, 0.77, 0.04]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.15, 0.018, 8, 28]} />
+        <meshStandardMaterial color="#050607" roughness={0.42} metalness={0.28} />
       </mesh>
-      <mesh castShadow position={[0, 0.2, 0.02]} scale={[0.84, 1.08, 0.78]}>
-        <sphereGeometry args={[0.18, 28, 18]} />
-        <meshStandardMaterial color={skin} roughness={0.52} />
-      </mesh>
-      <mesh castShadow position={[0, 0.29, -0.04]} scale={[0.92, 0.7, 0.76]}>
-        <sphereGeometry args={[0.2, 28, 14]} />
-        <meshStandardMaterial color={hair} roughness={0.76} />
-      </mesh>
-      {longHair && (
-        <mesh castShadow position={[0, 0.05, -0.13]} scale={[0.82, 1, 0.5]}>
-          <capsuleGeometry args={[0.17, 0.5, 10, 14]} />
-          <meshStandardMaterial color={hair} roughness={0.8} />
-        </mesh>
-      )}
-      {[-0.055, 0.055].map((x) => (
-        <mesh key={`eye-${x}`} position={[x, 0.22, 0.155]}>
-          <sphereGeometry args={[0.015, 10, 8]} />
-          <meshStandardMaterial color="#151515" roughness={0.35} />
-        </mesh>
-      ))}
-      <mesh position={[0, 0.17, 0.17]} scale={[0.7, 1, 0.55]}>
-        <sphereGeometry args={[0.018, 10, 8]} />
-        <meshStandardMaterial color="#a96f4c" roughness={0.58} />
-      </mesh>
-      <mesh position={[0, 0.11, 0.17]} scale={[1.6, 0.36, 0.36]}>
-        <sphereGeometry args={[0.024, 10, 8]} />
-        <meshStandardMaterial color="#7c4036" roughness={0.58} />
-      </mesh>
-      {[-0.16, 0.16].map((x) => (
-        <mesh
-          key={x}
-          castShadow
-          position={[x, -0.11, 0.12]}
-          rotation={[driver ? 1.04 : 0.62, 0, x > 0 ? -0.48 : 0.48]}
-        >
-          <capsuleGeometry args={[0.04, driver ? 0.4 : 0.32, 8, 10]} />
-          <meshStandardMaterial color={skin} roughness={0.56} />
-        </mesh>
-      ))}
-      {[-0.09, 0.09].map((x) => (
-        <mesh key={`leg-${x}`} castShadow position={[x, -0.52, 0.18]} rotation={[1.08, 0, x * 0.8]}>
-          <capsuleGeometry args={[0.05, 0.42, 8, 10]} />
-          <meshStandardMaterial color="#1f2529" roughness={0.58} />
-        </mesh>
-      ))}
+    </group>
+  )
+}
+
+function AssetSeatedHuman({
+  model,
+  position,
+  scale,
+  shirt,
+  skin,
+}: {
+  model: 'xbot' | 'michelle'
+  position: [number, number, number]
+  scale: number
+  shirt: string
+  skin: string
+}) {
+  const gltf = useGLTF(assetUrl(model === 'xbot' ? 'models/external/Xbot.glb' : 'models/external/Michelle.glb'))
+  const character = useMemo(() => {
+    const clone = cloneSkeleton(gltf.scene)
+    clone.traverse((child) => {
+      if (!(child instanceof Mesh)) return
+      child.castShadow = true
+      child.receiveShadow = true
+      const material = child.material
+      if (material instanceof MeshStandardMaterial) {
+        material.roughness = 0.64
+        material.metalness = 0.02
+        material.color.set(model === 'xbot' ? shirt : skin)
+      }
+    })
+    return clone
+  }, [gltf.scene, model, shirt, skin])
+
+  return (
+    <group position={position} rotation={[0, Math.PI, 0]} scale={scale}>
+      <primitive object={character} />
     </group>
   )
 }

@@ -34,6 +34,12 @@ npm run build
 npm run preview
 ```
 
+## Current Asset Pass
+
+- The playable car now uses a real GLB vehicle asset adapted from the three.js example `ferrari.glb`, recolored glacier blue and converted to an uncompressed local `real-car.glb` for reliable browser loading.
+- The driver/passenger cabin uses real humanoid GLB assets from the three.js example set (`Xbot.glb`, `Michelle.glb`) instead of only procedural capsule figures.
+- These are still proxy assets, not a licensed Tesla Model Y or final Thai character scans.
+
 ## Deploy To Vercel
 
 ```bash
