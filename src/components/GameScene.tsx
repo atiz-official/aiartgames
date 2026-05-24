@@ -1214,8 +1214,8 @@ function RealVehicleModel() {
 function AssetCabinCouple() {
   return (
     <group position={[0, 0, -0.1]}>
-      <AssetSeatedHuman model="xbot" position={[0.37, 0.82, -0.54]} scale={34} shirt="#263338" skin="#c28d62" />
-      <AssetSeatedHuman model="michelle" position={[-0.37, 0.8, -0.58]} scale={33} shirt="#f1ead9" skin="#dfb58e" />
+      <AssetSeatedHuman model="xbot" position={[0.36, 0.36, -0.62]} scale={0.42} shirt="#263338" skin="#c28d62" />
+      <AssetSeatedHuman model="michelle" position={[-0.36, 0.34, -0.66]} scale={0.4} shirt="#f1ead9" skin="#dfb58e" />
       <mesh castShadow position={[0.38, 0.77, 0.04]} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[0.15, 0.018, 8, 28]} />
         <meshStandardMaterial color="#050607" roughness={0.42} metalness={0.28} />

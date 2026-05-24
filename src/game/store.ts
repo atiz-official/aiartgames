@@ -81,11 +81,12 @@ const initialControls: DriveControls = {
   right: false,
   brake: false,
 }
+const initialStatus: GameStatus = new URLSearchParams(window.location.search).get('autostart') === '1' ? 'running' : 'ready'
 
 export const useGameStore = create<GameState>((set) => ({
   timeLeft: RUN_SECONDS,
   stress: 12,
-  status: 'ready',
+  status: initialStatus,
   stage: 'road',
   speed: 0,
   distance: 0,
