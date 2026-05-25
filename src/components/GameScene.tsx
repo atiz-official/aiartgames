@@ -178,8 +178,8 @@ function RoadRunScene() {
       }
 
       const cafeMilestones = [
-        { id: 'garden', z: FINISH_Z * 0.22, label: 'Garden cafe spotted.' },
-        { id: 'brunch', z: FINISH_Z * 0.44, label: 'Brunch place looks busy.' },
+        { id: 'garden', z: 90, label: 'Garden cafe spotted.' },
+        { id: 'brunch', z: 260, label: 'Brunch place looks busy.' },
         { id: 'terrace', z: CAFE_STOP_ZONE, label: 'This scenic cafe has the right vibe.' },
       ]
       for (const cafe of cafeMilestones) {
@@ -294,6 +294,7 @@ function RoadRunScene() {
       <StreetGreenery />
       <CafePatios />
       <ThongLorCafeStrip />
+      <CafeChoiceMarkers />
       <StreetPedestrians />
       <Traffic />
       <ScenicCafe />
@@ -1590,6 +1591,45 @@ function CafePatios() {
             <coneGeometry args={[1.5, 0.48, 4]} />
             <meshStandardMaterial color={index % 2 ? '#f4d49b' : '#e9ebdd'} roughness={0.46} />
           </mesh>
+        </group>
+      ))}
+    </group>
+  )
+}
+
+function CafeChoiceMarkers() {
+  const markers = useMemo(
+    () => [
+      { z: 90, x: -5.9, label: 'GARDEN CAFE', color: '#7ee29a' },
+      { z: 260, x: 5.9, label: 'BRUNCH PLACE', color: '#ffd06a' },
+      { z: CAFE_STOP_ZONE, x: 0, label: 'SCENIC COFFEE STOP', color: '#82e6ff' },
+    ],
+    [],
+  )
+
+  return (
+    <group>
+      {markers.map((marker) => (
+        <group key={marker.label} position={[marker.x, 0, marker.z]}>
+          <mesh position={[0, 0.055, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[0.72, 1.02, 48]} />
+            <meshStandardMaterial color={marker.color} emissive={marker.color} emissiveIntensity={0.45} transparent opacity={0.62} />
+          </mesh>
+          <mesh position={[0, 0.06, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <circleGeometry args={[0.62, 40]} />
+            <meshStandardMaterial color={marker.color} emissive={marker.color} emissiveIntensity={0.18} transparent opacity={0.18} />
+          </mesh>
+          <RoundedBox castShadow position={[0, 2.35, -0.08]} args={[2.4, 0.48, 0.12]} radius={0.04} smoothness={3}>
+            <meshStandardMaterial color="#132026" emissive={marker.color} emissiveIntensity={0.16} roughness={0.34} metalness={0.12} />
+          </RoundedBox>
+          <Text position={[0, 2.36, 0.01]} fontSize={0.18} color="#f8fbff" anchorX="center" anchorY="middle">
+            {marker.label}
+          </Text>
+          <mesh castShadow position={[0, 1.12, -0.08]}>
+            <cylinderGeometry args={[0.045, 0.045, 2.1, 10]} />
+            <meshStandardMaterial color="#1d2529" roughness={0.42} metalness={0.28} />
+          </mesh>
+          <pointLight position={[0, 1.5, 0]} intensity={2.4} distance={5} color={marker.color} />
         </group>
       ))}
     </group>
