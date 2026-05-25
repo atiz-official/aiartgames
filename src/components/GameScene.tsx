@@ -293,6 +293,7 @@ function RoadRunScene() {
       <ThongLorIdentity />
       <StreetGreenery />
       <CafePatios />
+      <ThongLorCafeStrip />
       <StreetPedestrians />
       <Traffic />
       <ScenicCafe />
@@ -1591,6 +1592,96 @@ function CafePatios() {
           </mesh>
         </group>
       ))}
+    </group>
+  )
+}
+
+function ThongLorCafeStrip() {
+  const venues = useMemo(
+    () => [
+      { side: -1, z: 42, name: 'COMMON YARD', tone: '#263d35', accent: '#f3c56d' },
+      { side: 1, z: 78, name: 'SOI 55 ROASTERS', tone: '#f0dcc1', accent: '#3a2a1e' },
+      { side: -1, z: 132, name: 'MATCHA BAR', tone: '#d8e4cf', accent: '#315c4c' },
+      { side: 1, z: 184, name: 'BRUNCH HOUSE', tone: '#26333a', accent: '#f7e7b5' },
+      { side: -1, z: 246, name: 'NEIGHBORHOOD CAFE', tone: '#f4e8d0', accent: '#7f3f2a' },
+      { side: 1, z: 318, name: 'SLOW COFFEE', tone: '#dfe8e4', accent: '#1f4f48' },
+    ],
+    [],
+  )
+
+  return (
+    <group>
+      {venues.map((venue, index) => (
+        <group key={venue.name} position={[venue.side * 11.25, 0, venue.z]} rotation={[0, venue.side > 0 ? -0.14 : 0.14, 0]}>
+          <RoundedBox castShadow receiveShadow position={[0, 1.8, 0]} args={[5.8, 3.6, 2.8]} radius={0.08} smoothness={4}>
+            <meshStandardMaterial color={venue.tone} roughness={0.48} metalness={0.06} />
+          </RoundedBox>
+          <RoundedBox castShadow position={[0, 3.82, -venue.side * 1.44]} args={[5.9, 0.52, 0.16]} radius={0.04} smoothness={3}>
+            <meshStandardMaterial color={venue.accent} emissive={venue.accent} emissiveIntensity={0.12} roughness={0.34} />
+          </RoundedBox>
+          <Text position={[0, 3.86, -venue.side * 1.54]} fontSize={0.26} color={index % 2 ? '#fff8df' : '#fff0ba'} anchorX="center" anchorY="middle">
+            {venue.name}
+          </Text>
+          {[-1.85, 0, 1.85].map((x) => (
+            <RoundedBox key={x} position={[x, 1.8, -venue.side * 1.48]} args={[1.28, 1.7, 0.08]} radius={0.035} smoothness={3}>
+              <meshStandardMaterial color="#d9fbff" transparent opacity={0.36} roughness={0.02} metalness={0.55} />
+            </RoundedBox>
+          ))}
+          <RoundedBox castShadow position={[venue.side * 2.9, 2.42, 0.28]} args={[0.62, 2.8, 0.16]} radius={0.05} smoothness={3}>
+            <meshStandardMaterial color="#182024" emissive="#24494c" emissiveIntensity={0.22} roughness={0.32} />
+          </RoundedBox>
+          <Text position={[venue.side * 2.9, 2.46, 0.39]} rotation={[0, 0, Math.PI / 2]} fontSize={0.24} color="#ffe8a3" anchorX="center" anchorY="middle">
+            CAFE
+          </Text>
+          <CafeStreetProps side={venue.side} index={index} />
+          <pointLight position={[0, 2.8, -venue.side * 1.8]} intensity={2.4} distance={7} color="#ffe1a4" />
+        </group>
+      ))}
+    </group>
+  )
+}
+
+function CafeStreetProps({ side, index }: { side: number; index: number }) {
+  return (
+    <group>
+      {[-1.8, 1.8].map((x) => (
+        <group key={`planter-${x}`} position={[x, 0, -side * 2.12]}>
+          <RoundedBox castShadow receiveShadow position={[0, 0.28, 0]} args={[0.72, 0.48, 0.46]} radius={0.05} smoothness={3}>
+            <meshStandardMaterial color="#9f7554" roughness={0.66} />
+          </RoundedBox>
+          <mesh castShadow position={[0, 0.78, 0]}>
+            <sphereGeometry args={[0.36, 14, 10]} />
+            <meshStandardMaterial color={index % 2 ? '#5a8e5d' : '#477c55'} roughness={0.72} />
+          </mesh>
+        </group>
+      ))}
+      <group position={[side * -1.05, 0, -side * 2.35]} rotation={[0, side * 0.45, 0]}>
+        <mesh castShadow position={[0, 0.42, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.28, 0.045, 8, 20]} />
+          <meshStandardMaterial color="#17191b" roughness={0.48} />
+        </mesh>
+        <mesh castShadow position={[0.74, 0.42, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <torusGeometry args={[0.28, 0.045, 8, 20]} />
+          <meshStandardMaterial color="#17191b" roughness={0.48} />
+        </mesh>
+        <RoundedBox castShadow position={[0.36, 0.72, 0]} args={[0.86, 0.28, 0.36]} radius={0.12} smoothness={4}>
+          <meshStandardMaterial color={index % 2 ? '#f3f0e8' : '#b63b35'} roughness={0.36} metalness={0.12} />
+        </RoundedBox>
+        <RoundedBox castShadow position={[0.68, 0.98, -0.04]} args={[0.28, 0.22, 0.2]} radius={0.08} smoothness={4}>
+          <meshStandardMaterial color="#2b3032" roughness={0.35} metalness={0.2} />
+        </RoundedBox>
+      </group>
+      <group position={[side * 0.96, 0, -side * 2.22]}>
+        <RoundedBox castShadow position={[0, 0.42, 0]} args={[1.3, 0.22, 0.36]} radius={0.05} smoothness={3}>
+          <meshStandardMaterial color="#6c523c" roughness={0.54} />
+        </RoundedBox>
+        {[-0.48, 0.48].map((x) => (
+          <mesh key={x} castShadow position={[x, 0.2, 0]}>
+            <boxGeometry args={[0.08, 0.4, 0.28]} />
+            <meshStandardMaterial color="#302820" roughness={0.5} />
+          </mesh>
+        ))}
+      </group>
     </group>
   )
 }
