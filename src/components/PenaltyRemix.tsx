@@ -90,6 +90,25 @@ function GoalImpact({ outcome }: { outcome: TimelineOutcome }) {
   )
 }
 
+function FanIntervention() {
+  return (
+    <div className="fan-intervention" aria-hidden>
+      <span className="fan-entry-burst" />
+      <span className="fan-runner">
+        <i className="fan-shadow" />
+        <i className="fan-head" />
+        <i className="fan-torso" />
+        <i className="fan-arm fan-arm-left" />
+        <i className="fan-arm fan-arm-right" />
+        <i className="fan-leg fan-leg-left" />
+        <i className="fan-leg fan-leg-right" />
+      </span>
+      <span className="fan-kick-flash" />
+      <span className="fan-caption">FAN TAKES OVER</span>
+    </div>
+  )
+}
+
 export function PenaltyRemix({ scenario = getScenario() }: { scenario?: PlayableMomentScenario }) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [phase, setPhase] = useState<ClipPhase>('ready')
@@ -228,13 +247,13 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
 
         {outcome && (
           <>
+            {outcome.effect === 'fan' && <FanIntervention />}
             <KeeperReaction outcome={outcome} />
             <RealisticBallFlight outcome={outcome} ballStart={scenario.markers.ballStart} />
             <GoalImpact outcome={outcome} />
           </>
         )}
 
-        {outcome?.effect === 'fan' && <div className="fan-chaos">FAN TAKES THE SHOT</div>}
         {outcome?.effect === 'portal' && <div className="var-portal">VAR PORTAL</div>}
 
         {phase === 'result' && outcome && (

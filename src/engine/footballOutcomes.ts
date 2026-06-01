@@ -16,7 +16,7 @@ function pickSpotKickOutcome(energy: TimelineEnergy, timing: number, seed: numbe
   const luck = rand()
   const power = precision * 0.72 + luck * 0.28
 
-  if (energy === 'chaos' && luck > 0.34) {
+  if (energy === 'chaos') {
     return {
       id: 'fan-steals-kick',
       label: 'Fan Timeline',
