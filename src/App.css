@@ -70,6 +70,39 @@
   transform: translate(-50%, -50%);
 }
 
+.energy-card {
+  top: auto;
+  bottom: 20px;
+  display: grid;
+  width: min(900px, calc(100% - 40px));
+  padding: 12px 14px 13px;
+  border-color: rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  background:
+    linear-gradient(90deg, rgba(5, 8, 14, 0.68), rgba(9, 13, 20, 0.36)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.34);
+  backdrop-filter: blur(10px);
+  transform: translateX(-50%);
+}
+
+.energy-card > span {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 19px;
+  align-items: center;
+  padding: 0 8px;
+  border-left: 3px solid #ffd66d;
+  color: #ffd66d;
+  background: rgba(0, 0, 0, 0.26);
+}
+
+.penalty-card.energy-card h2 {
+  margin: 6px 0 10px;
+  font-size: clamp(1.1rem, 2.2vw, 1.65rem);
+  line-height: 1;
+}
+
 .penalty-card span,
 .timeline-banner span,
 .result-slab span {
@@ -141,8 +174,8 @@
 
 .energy-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .energy-grid .energy-choice {
@@ -156,9 +189,9 @@
   justify-items: start;
   align-items: start;
   gap: 5px;
-  min-height: 112px;
+  min-height: 92px;
   overflow: hidden;
-  padding: 13px 14px 15px;
+  padding: 11px 13px 12px;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 12px;
   color: #fff;
@@ -167,7 +200,7 @@
     linear-gradient(135deg, color-mix(in srgb, var(--choice-a) 22%, rgba(255, 255, 255, 0.06)), color-mix(in srgb, var(--choice-b) 18%, rgba(0, 0, 0, 0.58)));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 14px 30px rgba(0, 0, 0, 0.28);
+    0 12px 28px rgba(0, 0, 0, 0.28);
   text-align: left;
   transform: translateY(0) scale(1);
   transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, filter 150ms ease;
@@ -265,14 +298,14 @@
 
 .energy-grid .energy-choice em {
   display: inline-flex;
-  min-height: 21px;
+  min-height: 19px;
   align-items: center;
   padding: 0 8px;
   border-radius: 999px;
   color: var(--choice-ink);
   background: var(--choice-a);
   box-shadow: 0 0 18px color-mix(in srgb, var(--choice-a) 48%, transparent);
-  font-size: 0.66rem;
+  font-size: 0.6rem;
   font-style: normal;
   font-weight: 1000;
   letter-spacing: 0.08em;
@@ -282,18 +315,18 @@
 
 .energy-grid strong {
   align-self: end;
-  margin-top: 11px;
+  margin-top: 8px;
   color: #fffdf0;
-  font-size: 1.48rem;
+  font-size: clamp(1.1rem, 1.9vw, 1.48rem);
   line-height: 0.95;
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
 }
 
 .energy-grid small {
-  max-width: calc(100% - 34px);
-  min-height: 30px;
+  max-width: calc(100% - 26px);
+  min-height: 26px;
   color: rgba(255, 255, 255, 0.82);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 800;
   line-height: 1.16;
   text-wrap: balance;
@@ -391,15 +424,15 @@
 
 .phase-choose .goal-hotspots,
 .phase-timing .goal-hotspots {
-  opacity: 1;
+  opacity: 0.62;
 }
 
 .hotspot {
   display: grid;
   place-items: center;
-  border: 1px solid rgba(157, 255, 199, 0.42);
-  color: rgba(255, 255, 255, 0.86);
-  background: rgba(7, 255, 160, 0.08);
+  border: 1px solid rgba(157, 255, 199, 0.25);
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(7, 255, 160, 0.035);
   font-size: 0.7rem;
   font-weight: 1000;
   letter-spacing: 0.1em;
@@ -1470,6 +1503,16 @@
 }
 
 @media (max-width: 860px) {
+  .energy-card {
+    bottom: 16px;
+    width: min(640px, calc(100% - 24px));
+    padding: 12px;
+  }
+
+  .energy-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .mission-panel {
     top: 12px;
     left: 12px;
@@ -1520,6 +1563,52 @@
 }
 
 @media (max-width: 620px) {
+  .energy-card {
+    bottom: 10px;
+  }
+
+  .energy-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .energy-grid {
+    gap: 7px;
+  }
+
+  .energy-grid .energy-choice {
+    min-height: 86px;
+    padding: 10px;
+  }
+
+  .energy-grid .energy-choice em {
+    min-height: 18px;
+    padding: 0 6px;
+    font-size: 0.56rem;
+  }
+
+  .energy-grid strong {
+    font-size: 1.02rem;
+  }
+
+  .energy-grid small {
+    min-height: 0;
+    font-size: 0.66rem;
+  }
+
+  .energy-grid .energy-choice::after {
+    right: 8px;
+    bottom: 8px;
+    width: 26px;
+    height: 26px;
+  }
+
+  .energy-grid .energy-choice > i {
+    right: 17px;
+    bottom: 17px;
+    width: 8px;
+    height: 8px;
+  }
+
   .mission-panel,
   .timer-panel,
   .new-mission,
