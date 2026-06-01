@@ -7,9 +7,10 @@ import { ACESFilmicToneMapping, SRGBColorSpace } from 'three'
 import type { WebGLRenderer } from 'three'
 import { GameScene } from './components/GameScene'
 import { Hud } from './components/Hud'
-import { PenaltyRemix } from './components/PenaltyRemix'
 import { useGameStore } from './game/store'
 import type { DriveControl } from './game/store'
+import { getScenario } from './scenarios/footballMoments'
+import { PlayableMoment } from './templates/PlayableMoment'
 import './App.css'
 
 const controls = [
@@ -22,7 +23,7 @@ const controls = [
 
 function App() {
   const params = new URLSearchParams(window.location.search)
-  if (params.get('mode') !== 'cafe') return <PenaltyRemix />
+  if (params.get('mode') !== 'cafe') return <PlayableMoment scenario={getScenario(params.get('scenario'))} />
 
   return <CafeRunApp />
 }
