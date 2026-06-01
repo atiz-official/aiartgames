@@ -194,9 +194,14 @@ function RealisticBallFlight({ outcome }: { outcome: RealityOutcome }) {
       <span className="ball-shadow" />
       <span className="ball-trail" />
       <span className="soccer-ball" aria-hidden>
+        <i className="ball-highlight" />
+        <i className="ball-stitch stitch-a" />
+        <i className="ball-stitch stitch-b" />
         <i className="panel panel-a" />
         <i className="panel panel-b" />
         <i className="panel panel-c" />
+        <i className="panel panel-d" />
+        <i className="panel panel-e" />
       </span>
     </div>
   )
@@ -205,11 +210,15 @@ function RealisticBallFlight({ outcome }: { outcome: RealityOutcome }) {
 function KeeperReaction({ outcome }: { outcome: RealityOutcome }) {
   return (
     <div className={`keeper-reaction dive-${outcome.keeperDive} effect-${outcome.effect}`} aria-hidden>
+      <span className="keeper-afterimage after-a" />
+      <span className="keeper-afterimage after-b" />
+      <span className="keeper-shadow" />
       <span className="keeper-head" />
       <span className="keeper-glove glove-left" />
       <span className="keeper-glove glove-right" />
       <span className="keeper-arm arm-left" />
       <span className="keeper-arm arm-right" />
+      <span className="keeper-shoulders" />
       <span className="keeper-body" />
       <span className="keeper-leg leg-left" />
       <span className="keeper-leg leg-right" />
@@ -371,13 +380,21 @@ export function PenaltyRemix() {
         )}
 
         {phase === 'timing' && (
-          <button type="button" className="kick-zone" onClick={kick}>
-            <span>Tap to kick</span>
+          <button type="button" className={`kick-zone timing-${energy ?? 'normal'}`} onClick={kick}>
+            <div className="kick-meta">
+              <span>Tap to kick</span>
+              {energy && <strong>{energyCopy[energy].title} timeline armed</strong>}
+            </div>
             <div className="timing-track">
+              <em className="bad-zone left-zone">EARLY</em>
               <i style={{ left: `${meter * 100}%` }} />
               <b />
+              <em className="bad-zone right-zone">LATE</em>
             </div>
-            <small>{meterScore < 0.08 ? 'Perfect window' : 'Hold nerve'}</small>
+            <div className="kick-feedback">
+              <small>{meterScore < 0.08 ? 'Perfect strike window' : meterScore < 0.18 ? 'Good contact' : 'Hold nerve'}</small>
+              <small>{Math.round((1 - Math.min(1, meterScore * 2)) * 100)}% control</small>
+            </div>
           </button>
         )}
 
