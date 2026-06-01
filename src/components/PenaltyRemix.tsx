@@ -12,6 +12,11 @@ type RealityOutcome = {
   rarity: string
   target: { x: number; y: number }
   ballColor: string
+  keeperDive: 'left' | 'right' | 'center' | 'hold'
+  flight: 'driven' | 'rising' | 'curl' | 'sky' | 'panenka' | 'portal'
+  impact: 'net' | 'save' | 'post' | 'miss' | 'portal'
+  curve: number
+  spin: number
   effect: 'clean' | 'save' | 'post' | 'sky' | 'fan' | 'portal' | 'multi'
 }
 
@@ -51,6 +56,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: 'absurd',
       target: { x: 48 + rand() * 7, y: 33 + rand() * 8 },
       ballColor: '#9affd0',
+      keeperDive: luck > 0.62 ? 'left' : 'right',
+      flight: 'curl',
+      impact: 'net',
+      curve: (rand() - 0.5) * 20,
+      spin: 950 + rand() * 520,
       effect: 'fan',
     }
   }
@@ -63,6 +73,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: 'cursed',
       target: { x: 50, y: 30 },
       ballColor: '#b88cff',
+      keeperDive: 'center',
+      flight: 'portal',
+      impact: 'portal',
+      curve: (rand() - 0.5) * 10,
+      spin: 1400,
       effect: 'portal',
     }
   }
@@ -75,6 +90,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: power > 0.86 ? 'legendary' : 'rare',
       target: { x: luck > 0.5 ? 69 : 31, y: 28 + rand() * 4 },
       ballColor: '#fff3a3',
+      keeperDive: luck > 0.5 ? 'left' : 'right',
+      flight: 'curl',
+      impact: 'net',
+      curve: luck > 0.5 ? 16 + rand() * 8 : -16 - rand() * 8,
+      spin: 1180 + rand() * 480,
       effect: 'clean',
     }
   }
@@ -87,6 +107,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: 'clean',
       target: { x: luck > 0.5 ? 63 : 37, y: 38 + rand() * 6 },
       ballColor: '#ffffff',
+      keeperDive: luck > 0.5 ? 'left' : 'right',
+      flight: power > 0.78 ? 'rising' : 'driven',
+      impact: 'net',
+      curve: luck > 0.5 ? 7 + rand() * 6 : -7 - rand() * 6,
+      spin: 980 + rand() * 420,
       effect: 'clean',
     }
   }
@@ -99,6 +124,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: 'painful',
       target: { x: luck > 0.5 ? 73 : 27, y: 36 },
       ballColor: '#ffffff',
+      keeperDive: luck > 0.5 ? 'left' : 'right',
+      flight: 'rising',
+      impact: 'post',
+      curve: luck > 0.5 ? 12 : -12,
+      spin: 1260,
       effect: 'post',
     }
   }
@@ -111,6 +141,11 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
       rarity: 'canon-adjacent',
       target: { x: 50 + (luck - 0.5) * 18, y: 43 },
       ballColor: '#ffffff',
+      keeperDive: luck > 0.56 ? 'right' : luck < 0.44 ? 'left' : 'center',
+      flight: 'driven',
+      impact: 'save',
+      curve: (luck - 0.5) * 10,
+      spin: 900,
       effect: 'save',
     }
   }
@@ -122,8 +157,84 @@ function pickOutcome(energy: Energy, timing: number, seed: number): RealityOutco
     rarity: 'tragic',
     target: { x: 50 + (luck - 0.5) * 28, y: 8 },
     ballColor: '#ffffff',
+    keeperDive: 'hold',
+    flight: 'sky',
+    impact: 'miss',
+    curve: (luck - 0.5) * 18,
+    spin: 1500,
     effect: 'sky',
   }
+}
+
+function getBallFlightStyle(outcome: RealityOutcome) {
+  const midX = (BALL_START.x + outcome.target.x) / 2 + outcome.curve * 0.22
+  const verticalLift =
+    outcome.flight === 'sky' ? 34 : outcome.flight === 'panenka' ? 25 : outcome.flight === 'curl' ? 18 : outcome.flight === 'rising' ? 14 : 8
+  const midY = Math.min(BALL_START.y, outcome.target.y) - verticalLift
+  const endScale = outcome.flight === 'sky' ? 0.28 : outcome.impact === 'save' ? 0.52 : 0.36
+  const blur = outcome.flight === 'driven' ? 1.8 : 1.1
+
+  return {
+    '--start-x': `${BALL_START.x}%`,
+    '--start-y': `${BALL_START.y}%`,
+    '--mid-x': `${midX}%`,
+    '--mid-y': `${midY}%`,
+    '--end-x': `${outcome.target.x}%`,
+    '--end-y': `${outcome.target.y}%`,
+    '--ball-color': outcome.ballColor,
+    '--spin': `${outcome.spin}deg`,
+    '--end-scale': endScale,
+    '--motion-blur': `${blur}px`,
+  } as CSSProperties
+}
+
+function RealisticBallFlight({ outcome }: { outcome: RealityOutcome }) {
+  return (
+    <div className={`ball-flight effect-${outcome.effect} flight-${outcome.flight}`} style={getBallFlightStyle(outcome)}>
+      <span className="ball-shadow" />
+      <span className="ball-trail" />
+      <span className="soccer-ball" aria-hidden>
+        <i className="panel panel-a" />
+        <i className="panel panel-b" />
+        <i className="panel panel-c" />
+      </span>
+    </div>
+  )
+}
+
+function KeeperReaction({ outcome }: { outcome: RealityOutcome }) {
+  return (
+    <div className={`keeper-reaction dive-${outcome.keeperDive} effect-${outcome.effect}`} aria-hidden>
+      <span className="keeper-head" />
+      <span className="keeper-glove glove-left" />
+      <span className="keeper-glove glove-right" />
+      <span className="keeper-arm arm-left" />
+      <span className="keeper-arm arm-right" />
+      <span className="keeper-body" />
+      <span className="keeper-leg leg-left" />
+      <span className="keeper-leg leg-right" />
+    </div>
+  )
+}
+
+function GoalImpact({ outcome }: { outcome: RealityOutcome }) {
+  return (
+    <div
+      className={`goal-impact impact-${outcome.impact}`}
+      style={
+        {
+          '--impact-x': `${outcome.target.x}%`,
+          '--impact-y': `${outcome.target.y}%`,
+        } as CSSProperties
+      }
+      aria-hidden
+    >
+      <span className="impact-core" />
+      <span className="net-line line-a" />
+      <span className="net-line line-b" />
+      <span className="net-line line-c" />
+    </div>
+  )
 }
 
 export function PenaltyRemix() {
@@ -269,24 +380,11 @@ export function PenaltyRemix() {
         )}
 
         {outcome && (
-          <div
-            className={`ball-remix effect-${outcome.effect}`}
-            style={{
-              '--start-x': `${BALL_START.x}%`,
-              '--start-y': `${BALL_START.y}%`,
-              '--end-x': `${outcome.target.x}%`,
-              '--end-y': `${outcome.target.y}%`,
-              '--ball-color': outcome.ballColor,
-            } as CSSProperties}
-          >
-            <span />
-            {outcome.effect === 'multi' && (
-              <>
-                <span />
-                <span />
-              </>
-            )}
-          </div>
+          <>
+            <KeeperReaction outcome={outcome} />
+            <RealisticBallFlight outcome={outcome} />
+            <GoalImpact outcome={outcome} />
+          </>
         )}
 
         {outcome?.effect === 'fan' && <div className="fan-chaos">FAN TAKES THE SHOT</div>}
@@ -294,7 +392,7 @@ export function PenaltyRemix() {
 
         {phase === 'result' && outcome && (
           <div className="result-slab">
-            <span>{timelineId} · {outcome.rarity}</span>
+            <span>{timelineId} - {outcome.rarity}</span>
             <h2>{outcome.label}</h2>
             <p>{outcome.caption}</p>
             <div className="result-actions">
@@ -312,7 +410,7 @@ export function PenaltyRemix() {
 
         <div className="news-strip">
           <Sparkles size={15} />
-          <span>2 sec setup · 3 sec interaction · 3 sec alternate result</span>
+          <span>2 sec setup - 3 sec interaction - 3 sec alternate result</span>
           <Zap size={15} />
         </div>
       </section>
