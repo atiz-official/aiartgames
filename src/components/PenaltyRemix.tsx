@@ -1,7 +1,7 @@
 import { Camera, CircleDot, RotateCcw, Sparkles, Zap } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { playFootballCue } from '../audio/footballAudio'
+import { playFootballCue, playOutcomeCues } from '../audio/footballAudio'
 import { pickFootballOutcome } from '../engine/footballOutcomes'
 import { randomSeed } from '../engine/random'
 import type { ClipPhase, PlayableMomentScenario, TimelineEnergy, TimelineOutcome } from '../engine/types'
@@ -45,6 +45,18 @@ function RealisticBallFlight({ outcome, ballStart }: { outcome: TimelineOutcome;
         <i className="panel panel-d" />
         <i className="panel panel-e" />
       </span>
+    </div>
+  )
+}
+
+function ActionShock({ outcome }: { outcome: TimelineOutcome }) {
+  return (
+    <div className={`action-shock shock-${outcome.effect}`} aria-hidden>
+      <span className="shock-flash" />
+      <span className="shock-speedline line-one" />
+      <span className="shock-speedline line-two" />
+      <span className="shock-speedline line-three" />
+      <span className="crowd-surge" />
     </div>
   )
 }
@@ -104,7 +116,7 @@ function FanIntervention() {
         <i className="fan-leg fan-leg-right" />
       </span>
       <span className="fan-kick-flash" />
-      <span className="fan-caption">FAN TAKES OVER</span>
+      <span className="fan-caption">FAN TAKES THE SHOT</span>
     </div>
   )
 }
@@ -166,6 +178,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
   function choose(nextEnergy: TimelineEnergy) {
     setEnergy(nextEnergy)
     setPhase('timing')
+    playFootballCue('tension')
   }
 
   function kick() {
@@ -175,12 +188,12 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     setTimelineId(getTimelineLabel(seed))
     setOutcome(nextOutcome)
     setPhase('result')
-    playFootballCue(nextOutcome.effect === 'portal' ? 'portal' : 'kick')
-    window.setTimeout(() => playFootballCue('crowd'), 260)
+    playFootballCue('kick')
+    playOutcomeCues(nextOutcome.effect === 'fan' ? 'chaos' : nextOutcome.effect === 'portal' ? 'portal' : 'crowd', nextOutcome.impact)
   }
 
   return (
-    <main className={`penalty-lab phase-${phase}`}>
+    <main className={`penalty-lab phase-${phase} ${outcome ? `outcome-${outcome.effect} impact-${outcome.impact}` : ''}`}>
       <section className="penalty-stage" aria-label="Playable news penalty remix">
         <video ref={videoRef} src={source} muted playsInline preload="auto" onTimeUpdate={onTimeUpdate} />
         <div className="broadcast-grade" />
@@ -247,6 +260,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
 
         {outcome && (
           <>
+            <ActionShock outcome={outcome} />
             {outcome.effect === 'fan' && <FanIntervention />}
             <KeeperReaction outcome={outcome} />
             <RealisticBallFlight outcome={outcome} ballStart={scenario.markers.ballStart} />
