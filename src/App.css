@@ -142,27 +142,179 @@
 .energy-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 12px;
 }
 
-.energy-grid button {
+.energy-grid .energy-choice {
+  --choice-a: #9dffc7;
+  --choice-b: #36b5ff;
+  --choice-ink: #07100d;
+  position: relative;
+  isolation: isolate;
   display: grid;
+  grid-template-rows: auto 1fr auto;
   justify-items: start;
-  min-height: 82px;
-  padding: 12px;
+  align-items: start;
+  gap: 5px;
+  min-height: 112px;
+  overflow: hidden;
+  padding: 13px 14px 15px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
   color: #fff;
-  background: rgba(255, 255, 255, 0.08);
+  background:
+    radial-gradient(circle at 84% 18%, color-mix(in srgb, var(--choice-a) 46%, transparent), transparent 34%),
+    linear-gradient(135deg, color-mix(in srgb, var(--choice-a) 22%, rgba(255, 255, 255, 0.06)), color-mix(in srgb, var(--choice-b) 18%, rgba(0, 0, 0, 0.58)));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 14px 30px rgba(0, 0, 0, 0.28);
   text-align: left;
+  transform: translateY(0) scale(1);
+  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+}
+
+.energy-grid .energy-choice::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, transparent 0 32%, rgba(255, 255, 255, 0.24) 45%, transparent 58%),
+    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 8px);
+  opacity: 0.34;
+  transform: translateX(-36%);
+  transition: transform 240ms ease, opacity 150ms ease;
+}
+
+.energy-grid .energy-choice::after {
+  content: "";
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  width: 34px;
+  height: 34px;
+  border: 2px solid rgba(255, 255, 255, 0.42);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.78) 0 10%, transparent 11% 100%),
+    conic-gradient(from 0deg, rgba(255, 255, 255, 0.86), transparent 22%, rgba(255, 255, 255, 0.86) 44%, transparent 64%, rgba(255, 255, 255, 0.86));
+  opacity: 0.56;
+  transition: transform 180ms ease, opacity 150ms ease;
+}
+
+.energy-grid .energy-choice:hover {
+  border-color: color-mix(in srgb, var(--choice-a) 72%, #fff);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 18px 40px rgba(0, 0, 0, 0.38),
+    0 0 34px color-mix(in srgb, var(--choice-a) 42%, transparent);
+  filter: saturate(1.12);
+  transform: translateY(-3px) scale(1.018);
+}
+
+.energy-grid .energy-choice:hover::before {
+  opacity: 0.58;
+  transform: translateX(20%);
+}
+
+.energy-grid .energy-choice:hover::after {
+  opacity: 0.9;
+  transform: rotate(28deg) scale(1.08);
+}
+
+.energy-grid .energy-choice:active {
+  transform: translateY(1px) scale(0.985);
+}
+
+.energy-grid .energy-choice:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--choice-a) 68%, #fff);
+  outline-offset: 3px;
+}
+
+.energy-grid .energy-normal {
+  --choice-a: #7dffbc;
+  --choice-b: #149aff;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(125, 255, 188, 0.36), transparent 34%),
+    linear-gradient(135deg, rgba(33, 82, 70, 0.94), rgba(13, 45, 72, 0.94));
+}
+
+.energy-grid .energy-hero {
+  --choice-a: #ffe45f;
+  --choice-b: #ff5d25;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 228, 95, 0.44), transparent 34%),
+    linear-gradient(135deg, rgba(99, 72, 20, 0.96), rgba(120, 38, 22, 0.94));
+}
+
+.energy-grid .energy-chaos {
+  --choice-a: #ff38c7;
+  --choice-b: #15e8ff;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(21, 232, 255, 0.42), transparent 34%),
+    linear-gradient(135deg, rgba(99, 24, 86, 0.96), rgba(13, 67, 94, 0.94));
+}
+
+.energy-grid .energy-cursed {
+  --choice-a: #a875ff;
+  --choice-b: #ff255f;
+  background:
+    radial-gradient(circle at 84% 18%, rgba(255, 37, 95, 0.4), transparent 34%),
+    linear-gradient(135deg, rgba(64, 31, 111, 0.96), rgba(86, 18, 53, 0.94));
+}
+
+.energy-grid .energy-choice em {
+  display: inline-flex;
+  min-height: 21px;
+  align-items: center;
+  padding: 0 8px;
+  border-radius: 999px;
+  color: var(--choice-ink);
+  background: var(--choice-a);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--choice-a) 48%, transparent);
+  font-size: 0.66rem;
+  font-style: normal;
+  font-weight: 1000;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .energy-grid strong {
-  font-size: 1.05rem;
+  align-self: end;
+  margin-top: 11px;
+  color: #fffdf0;
+  font-size: 1.48rem;
+  line-height: 0.95;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
 }
 
 .energy-grid small {
-  color: rgba(255, 255, 255, 0.68);
-  font-weight: 700;
-  line-height: 1.25;
+  max-width: calc(100% - 34px);
+  min-height: 30px;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.16;
+  text-wrap: balance;
+}
+
+.energy-grid .energy-choice > i {
+  position: absolute;
+  right: 23px;
+  bottom: 23px;
+  width: 12px;
+  height: 12px;
+  border-top: 3px solid #fff;
+  border-right: 3px solid #fff;
+  opacity: 0.75;
+  transform: rotate(45deg);
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.energy-grid .energy-choice:hover > i {
+  opacity: 1;
+  transform: translateX(4px) rotate(45deg);
 }
 
 .kick-zone {

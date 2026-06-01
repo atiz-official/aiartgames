@@ -23,11 +23,11 @@ type RealityOutcome = {
 const BRANCH_TIME = 3.05
 const BALL_START = { x: 42.4, y: 70.8 }
 
-const energyCopy: Record<Energy, { title: string; description: string }> = {
-  normal: { title: 'Normal', description: 'Reality stays mostly legal.' },
-  hero: { title: 'Hero', description: 'Bias toward cinematic redemption.' },
-  chaos: { title: 'Chaos', description: 'The internet enters the pitch.' },
-  cursed: { title: 'Cursed', description: 'VAR opens forbidden doors.' },
+const energyCopy: Record<Energy, { title: string; kicker: string; description: string }> = {
+  normal: { title: 'Normal', kicker: 'Canon-safe', description: 'Reality stays mostly legal.' },
+  hero: { title: 'Hero', kicker: 'Top bins', description: 'Bias toward cinematic redemption.' },
+  chaos: { title: 'Chaos', kicker: 'Viral mode', description: 'The internet enters the pitch.' },
+  cursed: { title: 'Cursed', kicker: 'VAR glitch', description: 'Forbidden doors open.' },
 }
 
 function randomSeed() {
@@ -359,9 +359,11 @@ export function PenaltyRemix() {
             <h2>Choose timeline energy</h2>
             <div className="energy-grid">
               {(Object.keys(energyCopy) as Energy[]).map((key) => (
-                <button key={key} type="button" onClick={() => choose(key)}>
+                <button key={key} type="button" className={`energy-choice energy-${key}`} onClick={() => choose(key)}>
+                  <em>{energyCopy[key].kicker}</em>
                   <strong>{energyCopy[key].title}</strong>
                   <small>{energyCopy[key].description}</small>
+                  <i aria-hidden />
                 </button>
               ))}
             </div>
