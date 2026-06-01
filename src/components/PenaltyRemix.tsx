@@ -54,6 +54,8 @@ function KeeperReaction({ outcome }: { outcome: TimelineOutcome }) {
     <div className={`keeper-reaction dive-${outcome.keeperDive} effect-${outcome.effect}`} aria-hidden>
       <span className="keeper-afterimage after-a" />
       <span className="keeper-afterimage after-b" />
+      <span className="keeper-dive-trail" />
+      <span className="keeper-reach-line" />
       <span className="keeper-shadow" />
       <span className="keeper-head" />
       <span className="keeper-glove glove-left" />
