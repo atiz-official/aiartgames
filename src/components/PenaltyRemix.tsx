@@ -1,4 +1,4 @@
-import { Camera, CircleDot, RotateCcw, Sparkles, Zap } from 'lucide-react'
+import { Camera, CircleDot, RotateCcw, Sparkles, Video, Zap } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { playFootballCue, playOutcomeCues } from '../audio/footballAudio'
@@ -6,7 +6,7 @@ import { pickFootballOutcome } from '../engine/footballOutcomes'
 import { randomSeed } from '../engine/random'
 import type { ClipPhase, PlayableMomentScenario, TimelineEnergy, TimelineOutcome } from '../engine/types'
 import { getScenario } from '../scenarios/footballMoments'
-import { captureTimeline, getTimelineLabel } from '../share/timelineShare'
+import { captureTimeline, exportTimelineClip, getTimelineLabel } from '../share/timelineShare'
 
 function getBallFlightStyle(outcome: TimelineOutcome, ballStart: { x: number; y: number }) {
   const midX = (ballStart.x + outcome.target.x) / 2 + outcome.curve * 0.22
@@ -229,6 +229,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
   const [meter, setMeter] = useState(0)
   const [outcome, setOutcome] = useState<TimelineOutcome | null>(null)
   const [timelineId, setTimelineId] = useState('')
+  const [exportingClip, setExportingClip] = useState(false)
   const animationRef = useRef<number | null>(null)
 
   const source = `${import.meta.env.BASE_URL}${scenario.baseVideo}`
@@ -273,6 +274,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     setEnergy(null)
     setOutcome(null)
     setTimelineId('')
+    setExportingClip(false)
     const video = videoRef.current
     if (!video) return
     video.currentTime = 0
@@ -306,6 +308,15 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     setPhase('result')
     playFootballCue('kick')
     playOutcomeCues(nextOutcome.effect === 'fan' ? 'chaos' : nextOutcome.effect === 'portal' ? 'portal' : 'crowd', nextOutcome.impact)
+  }
+
+  async function saveShareClip(nextOutcome: TimelineOutcome) {
+    setExportingClip(true)
+    try {
+      await exportTimelineClip(source, scenario, nextOutcome, timelineId)
+    } finally {
+      setExportingClip(false)
+    }
   }
 
   return (
@@ -397,9 +408,13 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
                 <RotateCcw size={16} />
                 New timeline
               </button>
+              <button type="button" onClick={() => void saveShareClip(outcome)} disabled={exportingClip}>
+                <Video size={16} />
+                {exportingClip ? 'Making clip' : 'Save clip'}
+              </button>
               <button type="button" onClick={() => void captureTimeline(scenario, outcome, timelineId)}>
                 <Camera size={16} />
-                Capture
+                Share link
               </button>
             </div>
           </div>

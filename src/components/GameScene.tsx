@@ -797,7 +797,7 @@ function ImportedHumanoid({
   scale?: number
   carryChild?: boolean
 }) {
-  const { scene, animations } = useGLTF('/models/CesiumMan.glb')
+  const { scene, animations } = useGLTF(assetUrl('models/CesiumMan.glb'))
   const model = useMemo(() => cloneSkeleton(scene) as Group, [scene])
   const { actions } = useAnimations(animations, model)
 
@@ -937,7 +937,7 @@ function ChildMarker({ picked }: { picked: boolean }) {
   )
 }
 
-useGLTF.preload('/models/CesiumMan.glb')
+useGLTF.preload(assetUrl('models/CesiumMan.glb'))
 
 function Road() {
   const segments = useMemo(() => Array.from({ length: 36 }, (_, index) => index * 28), [])
