@@ -558,10 +558,97 @@
 .keeper-reaction,
 .goal-impact,
 .fan-intervention,
-.action-shock {
+.action-shock,
+.keeper-replacement-mask {
   pointer-events: none;
   position: absolute;
   inset: 0;
+}
+
+.keeper-replacement-mask {
+  z-index: 7;
+  left: 50.2%;
+  top: 38.8%;
+  width: clamp(94px, 10vw, 124px);
+  height: clamp(132px, 16.5vw, 176px);
+  opacity: 0;
+  overflow: hidden;
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(112, 122, 126, 0.32), rgba(25, 55, 91, 0.74) 34%, rgba(24, 48, 72, 0.86) 62%, rgba(24, 40, 20, 0.86) 100%);
+  backdrop-filter: blur(7px) saturate(0.72);
+  transform: translate(-50%, -50%);
+  animation: keeper-mask-in 1.9s ease 40ms forwards;
+}
+
+.keeper-replacement-mask span {
+  position: absolute;
+  display: block;
+}
+
+.mask-board {
+  left: -16%;
+  right: -16%;
+  top: 25%;
+  height: 48%;
+  background:
+    linear-gradient(90deg, rgba(24, 55, 96, 0.98), rgba(36, 82, 140, 0.98), rgba(18, 42, 74, 0.98)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 18px);
+  filter: blur(0.4px);
+  opacity: 1;
+}
+
+.mask-grass {
+  left: -12%;
+  right: -12%;
+  top: 62%;
+  bottom: -10%;
+  background:
+    radial-gradient(ellipse at 50% 12%, rgba(22, 44, 23, 0.94), transparent 55%),
+    linear-gradient(180deg, rgba(30, 55, 24, 0.94), rgba(18, 35, 18, 0.98));
+  filter: blur(1px);
+}
+
+.mask-net {
+  z-index: 2;
+  opacity: 0.5;
+  background: rgba(230, 238, 232, 0.58);
+  mix-blend-mode: screen;
+}
+
+.net-v1,
+.net-v2,
+.net-v3 {
+  top: 0;
+  bottom: 18%;
+  width: 1px;
+}
+
+.net-v1 {
+  left: 22%;
+}
+
+.net-v2 {
+  left: 50%;
+}
+
+.net-v3 {
+  right: 21%;
+}
+
+.net-h1,
+.net-h2 {
+  left: 0;
+  right: 0;
+  height: 1px;
+}
+
+.net-h1 {
+  top: 20%;
+}
+
+.net-h2 {
+  top: 52%;
 }
 
 .keeper-reaction {
@@ -1205,6 +1292,22 @@
     top: calc(var(--end-y) + 7%);
     opacity: 0.04;
     transform: translate(-50%, -50%) scale(0.45);
+  }
+}
+
+@keyframes keeper-mask-in {
+  0% {
+    opacity: 0;
+    filter: blur(1.4px);
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  12% {
+    opacity: 0.98;
+  }
+  100% {
+    opacity: 0.98;
+    filter: blur(0.45px);
+    transform: translate(-50%, -50%) scale(1);
   }
 }
 

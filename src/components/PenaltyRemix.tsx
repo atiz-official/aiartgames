@@ -61,6 +61,20 @@ function ActionShock({ outcome }: { outcome: TimelineOutcome }) {
   )
 }
 
+function KeeperReplacementMask() {
+  return (
+    <div className="keeper-replacement-mask" aria-hidden>
+      <span className="mask-net net-v1" />
+      <span className="mask-net net-v2" />
+      <span className="mask-net net-v3" />
+      <span className="mask-net net-h1" />
+      <span className="mask-net net-h2" />
+      <span className="mask-board" />
+      <span className="mask-grass" />
+    </div>
+  )
+}
+
 function KeeperReaction({ outcome }: { outcome: TimelineOutcome }) {
   return (
     <div className={`keeper-reaction dive-${outcome.keeperDive} effect-${outcome.effect}`} aria-hidden>
@@ -269,6 +283,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
           <>
             <ActionShock outcome={outcome} />
             {outcome.effect === 'fan' && <FanIntervention />}
+            <KeeperReplacementMask />
             <KeeperReaction outcome={outcome} />
             <RealisticBallFlight outcome={outcome} ballStart={scenario.markers.ballStart} />
             <GoalImpact outcome={outcome} />
