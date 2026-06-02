@@ -85,22 +85,50 @@ function KeeperReaction({ outcome }: { outcome: TimelineOutcome }) {
       <span className="keeper-dive-trail" />
       <span className="keeper-reach-line" />
       <svg className="keeper-svg" viewBox="0 0 100 170" role="presentation">
+        <defs>
+          <linearGradient id="keeperKit" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#3f775c" />
+            <stop offset="46%" stopColor="#245941" />
+            <stop offset="100%" stopColor="#112f25" />
+          </linearGradient>
+          <linearGradient id="keeperSkin" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#d1a07b" />
+            <stop offset="62%" stopColor="#9d6746" />
+            <stop offset="100%" stopColor="#704634" />
+          </linearGradient>
+          <linearGradient id="keeperFabricDark" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0%" stopColor="#213948" />
+            <stop offset="100%" stopColor="#0c171f" />
+          </linearGradient>
+        </defs>
         <ellipse className="keeper-ground-shadow" cx="50" cy="158" rx="25" ry="7" />
         <g className="keeper-human">
-          <path className="keeper-limb keeper-leg-left" d="M43 90 C37 104 31 124 25 151" />
-          <path className="keeper-limb keeper-leg-right" d="M58 90 C65 107 70 126 76 150" />
-          <path className="keeper-boot" d="M17 151 L31 151 L31 158 L14 159 Z" />
-          <path className="keeper-boot" d="M70 149 L84 151 L88 158 L72 158 Z" />
-          <path className="keeper-limb keeper-arm-left" d="M38 48 C27 60 18 76 11 97" />
-          <path className="keeper-limb keeper-arm-right" d="M62 48 C74 62 83 78 91 99" />
+          <path className="keeper-leg-shape leg-shape-left" d="M39 91 C36 105 30 128 23 151 L34 152 C39 130 45 109 49 94 Z" />
+          <path className="keeper-leg-shape leg-shape-right" d="M57 93 C63 110 70 130 75 151 L86 151 C79 126 72 105 63 90 Z" />
+          <path className="keeper-leg-highlight leg-highlight-left" d="M41 96 C38 112 34 130 31 147" />
+          <path className="keeper-leg-highlight leg-highlight-right" d="M62 98 C69 117 74 132 78 148" />
+          <path className="keeper-boot" d="M16 150 L34 151 L34 158 L12 159 Z" />
+          <path className="keeper-boot" d="M70 148 L86 151 L91 158 L71 158 Z" />
+          <path className="keeper-arm-shape arm-shape-left" d="M39 45 C29 58 19 76 9 96 L18 101 C27 82 35 66 46 53 Z" />
+          <path className="keeper-arm-shape arm-shape-right" d="M61 45 C73 60 84 80 91 100 L99 95 C91 73 82 57 67 47 Z" />
+          <path className="keeper-arm-highlight arm-highlight-left" d="M35 56 C26 69 21 81 15 94" />
+          <path className="keeper-arm-highlight arm-highlight-right" d="M70 57 C79 70 85 82 92 95" />
           <circle className="keeper-real-glove" cx="10" cy="99" r="7" />
           <circle className="keeper-real-glove" cx="92" cy="100" r="7" />
           <path className="keeper-shorts" d="M37 82 L63 82 L68 101 L55 104 L50 91 L44 104 L31 101 Z" />
-          <path className="keeper-torso" d="M36 38 C43 33 57 33 65 39 L68 79 C61 87 42 87 34 80 Z" />
-          <path className="keeper-torso-light" d="M43 39 C50 36 58 37 63 41 L62 58 C55 54 48 51 40 50 Z" />
+          <path className="keeper-torso" d="M35 38 C42 31 58 31 66 39 C70 52 70 68 67 81 C60 89 42 89 34 80 C32 65 32 51 35 38 Z" />
+          <path className="keeper-chest-shadow" d="M38 43 C48 51 58 59 65 77 C59 83 46 85 38 78 Z" />
+          <path className="keeper-torso-light" d="M41 39 C49 35 59 36 64 42 L62 57 C55 53 48 50 39 50 Z" />
+          <path className="keeper-jersey-fold fold-a" d="M44 43 C43 56 43 68 45 82" />
+          <path className="keeper-jersey-fold fold-b" d="M57 42 C58 55 57 67 55 82" />
           <circle className="keeper-neck" cx="50" cy="36" r="5" />
-          <circle className="keeper-face" cx="50" cy="24" r="11" />
+          <path className="keeper-face" d="M39 23 C39 15 44 10 51 10 C59 10 64 16 63 24 C62 33 57 39 50 39 C43 38 39 32 39 23 Z" />
           <path className="keeper-hair" d="M39 23 C41 12 56 10 62 21 C55 17 47 18 39 23 Z" />
+          <path className="keeper-face-shadow" d="M53 16 C61 20 60 33 52 37 C56 29 56 22 53 16 Z" />
+          <path className="keeper-brow" d="M43 23 C47 21 53 21 57 23" />
+          <circle className="keeper-eye eye-left" cx="46" cy="25" r="1.1" />
+          <circle className="keeper-eye eye-right" cx="54" cy="25" r="1.1" />
+          <path className="keeper-nose" d="M50 25 L48 31 L52 31" />
         </g>
       </svg>
     </div>
