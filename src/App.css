@@ -89,35 +89,37 @@
 
 .energy-card {
   top: auto;
-  bottom: 20px;
+  bottom: 24px;
   display: grid;
-  width: min(900px, calc(100% - 40px));
-  padding: 12px 14px 13px;
-  border-color: rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  width: min(820px, calc(100% - 48px));
+  padding: 13px 14px 14px;
+  border-color: rgba(255, 255, 255, 0.11);
+  border-radius: 12px;
   background:
-    linear-gradient(90deg, rgba(5, 8, 14, 0.68), rgba(9, 13, 20, 0.36)),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.34);
-  backdrop-filter: blur(10px);
+    linear-gradient(90deg, rgba(5, 8, 12, 0.48), rgba(8, 12, 18, 0.22)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(8px);
   transform: translateX(-50%);
 }
 
 .energy-card > span {
   display: inline-flex;
   width: fit-content;
-  min-height: 19px;
+  min-height: 16px;
   align-items: center;
-  padding: 0 8px;
-  border-left: 3px solid #ffd66d;
-  color: #ffd66d;
-  background: rgba(0, 0, 0, 0.26);
+  padding: 0 6px;
+  border-left: 2px solid rgba(255, 214, 109, 0.78);
+  color: rgba(255, 219, 132, 0.88);
+  background: rgba(0, 0, 0, 0.14);
 }
 
 .penalty-card.energy-card h2 {
-  margin: 6px 0 10px;
-  font-size: clamp(1.1rem, 2.2vw, 1.65rem);
-  line-height: 1;
+  margin: 6px 0 12px;
+  color: rgba(255, 248, 220, 0.9);
+  font-size: clamp(1rem, 1.72vw, 1.34rem);
+  font-weight: 800;
+  line-height: 1.05;
 }
 
 .penalty-card span,
@@ -192,7 +194,7 @@
 .energy-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 10px;
+  gap: 8px;
 }
 
 .energy-grid .energy-choice {
@@ -202,74 +204,62 @@
   position: relative;
   isolation: isolate;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr;
   justify-items: start;
   align-items: start;
-  gap: 5px;
-  min-height: 92px;
+  gap: 6px;
+  min-height: 78px;
   overflow: hidden;
-  padding: 11px 13px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
+  padding: 10px 11px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 9px;
   color: #fff;
-  background:
-    radial-gradient(circle at 84% 18%, color-mix(in srgb, var(--choice-a) 46%, transparent), transparent 34%),
-    linear-gradient(135deg, color-mix(in srgb, var(--choice-a) 22%, rgba(255, 255, 255, 0.06)), color-mix(in srgb, var(--choice-b) 18%, rgba(0, 0, 0, 0.58)));
+  background: rgba(7, 11, 15, 0.34);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    0 12px 28px rgba(0, 0, 0, 0.28);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 20px rgba(0, 0, 0, 0.16);
   text-align: left;
   transform: translateY(0) scale(1);
-  transition: transform 150ms ease, border-color 150ms ease, box-shadow 150ms ease, filter 150ms ease;
+  transition: transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
 }
 
 .energy-grid .energy-choice::before {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: 0 auto 0 0;
   z-index: -1;
-  background:
-    linear-gradient(115deg, transparent 0 32%, rgba(255, 255, 255, 0.24) 45%, transparent 58%),
-    repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 1px, transparent 1px 8px);
-  opacity: 0.34;
-  transform: translateX(-36%);
-  transition: transform 240ms ease, opacity 150ms ease;
+  width: 4px;
+  background: var(--choice-a);
+  opacity: 0.72;
+  transform: none;
+  transition: opacity 150ms ease;
 }
 
 .energy-grid .energy-choice::after {
   content: "";
   position: absolute;
-  right: 12px;
-  bottom: 12px;
-  width: 34px;
-  height: 34px;
-  border: 2px solid rgba(255, 255, 255, 0.42);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.78) 0 10%, transparent 11% 100%),
-    conic-gradient(from 0deg, rgba(255, 255, 255, 0.86), transparent 22%, rgba(255, 255, 255, 0.86) 44%, transparent 64%, rgba(255, 255, 255, 0.86));
-  opacity: 0.56;
-  transition: transform 180ms ease, opacity 150ms ease;
+  inset: 0;
+  z-index: -2;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--choice-a) 16%, transparent), color-mix(in srgb, var(--choice-b) 8%, transparent));
+  opacity: 0.22;
+  transition: opacity 150ms ease;
 }
 
 .energy-grid .energy-choice:hover {
-  border-color: color-mix(in srgb, var(--choice-a) 72%, #fff);
+  border-color: color-mix(in srgb, var(--choice-a) 46%, rgba(255, 255, 255, 0.2));
+  background: rgba(7, 11, 15, 0.5);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.32),
-    0 18px 40px rgba(0, 0, 0, 0.38),
-    0 0 34px color-mix(in srgb, var(--choice-a) 42%, transparent);
-  filter: saturate(1.12);
-  transform: translateY(-3px) scale(1.018);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 12px 28px rgba(0, 0, 0, 0.26);
+  transform: translateY(-2px);
 }
 
 .energy-grid .energy-choice:hover::before {
-  opacity: 0.58;
-  transform: translateX(20%);
+  opacity: 1;
 }
 
 .energy-grid .energy-choice:hover::after {
-  opacity: 0.9;
-  transform: rotate(28deg) scale(1.08);
+  opacity: 0.36;
 }
 
 .energy-grid .energy-choice:active {
@@ -283,81 +273,69 @@
 
 .energy-grid .energy-normal {
   --choice-a: #7dffbc;
-  --choice-b: #149aff;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(125, 255, 188, 0.36), transparent 34%),
-    linear-gradient(135deg, rgba(33, 82, 70, 0.94), rgba(13, 45, 72, 0.94));
+  --choice-b: #8ad7ff;
 }
 
 .energy-grid .energy-hero {
   --choice-a: #ffe45f;
-  --choice-b: #ff5d25;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(255, 228, 95, 0.44), transparent 34%),
-    linear-gradient(135deg, rgba(99, 72, 20, 0.96), rgba(120, 38, 22, 0.94));
+  --choice-b: #ff9b5f;
 }
 
 .energy-grid .energy-chaos {
-  --choice-a: #ff38c7;
-  --choice-b: #15e8ff;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(21, 232, 255, 0.42), transparent 34%),
-    linear-gradient(135deg, rgba(99, 24, 86, 0.96), rgba(13, 67, 94, 0.94));
+  --choice-a: #ff65d6;
+  --choice-b: #7ddfff;
 }
 
 .energy-grid .energy-cursed {
   --choice-a: #a875ff;
-  --choice-b: #ff255f;
-  background:
-    radial-gradient(circle at 84% 18%, rgba(255, 37, 95, 0.4), transparent 34%),
-    linear-gradient(135deg, rgba(64, 31, 111, 0.96), rgba(86, 18, 53, 0.94));
+  --choice-b: #ff6f9f;
 }
 
 .energy-grid .energy-choice em {
   display: inline-flex;
-  min-height: 19px;
+  min-height: 17px;
   align-items: center;
-  padding: 0 8px;
+  padding: 0 7px;
   border-radius: 999px;
-  color: var(--choice-ink);
-  background: var(--choice-a);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--choice-a) 48%, transparent);
-  font-size: 0.6rem;
+  color: color-mix(in srgb, var(--choice-a) 78%, #fff);
+  background: color-mix(in srgb, var(--choice-a) 12%, rgba(255, 255, 255, 0.08));
+  box-shadow: none;
+  font-size: 0.54rem;
   font-style: normal;
-  font-weight: 1000;
-  letter-spacing: 0.08em;
+  font-weight: 900;
+  letter-spacing: 0.07em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 .energy-grid strong {
-  align-self: end;
-  margin-top: 8px;
-  color: #fffdf0;
-  font-size: clamp(1.1rem, 1.9vw, 1.48rem);
-  line-height: 0.95;
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+  align-self: start;
+  margin-top: 0;
+  color: rgba(255, 253, 240, 0.94);
+  font-size: clamp(0.98rem, 1.48vw, 1.22rem);
+  line-height: 1.02;
+  text-shadow: none;
 }
 
 .energy-grid small {
-  max-width: calc(100% - 26px);
-  min-height: 26px;
-  color: rgba(255, 255, 255, 0.82);
-  font-size: 0.72rem;
-  font-weight: 800;
-  line-height: 1.16;
+  max-width: 100%;
+  min-height: 0;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 0.62rem;
+  font-weight: 650;
+  line-height: 1.18;
   text-wrap: balance;
 }
 
 .energy-grid .energy-choice > i {
   position: absolute;
-  right: 23px;
-  bottom: 23px;
-  width: 12px;
-  height: 12px;
-  border-top: 3px solid #fff;
-  border-right: 3px solid #fff;
-  opacity: 0.75;
+  right: 12px;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  border-top: 2px solid rgba(255, 255, 255, 0.58);
+  border-right: 2px solid rgba(255, 255, 255, 0.58);
+  opacity: 0.62;
   transform: rotate(45deg);
   transition: transform 160ms ease, opacity 160ms ease;
 }
@@ -2756,48 +2734,51 @@
 @media (max-width: 620px) {
   .energy-card {
     bottom: 10px;
-  }
-
-  .energy-card h2 {
-    font-size: 1.35rem;
-  }
-
-  .energy-grid {
-    gap: 7px;
-  }
-
-  .energy-grid .energy-choice {
-    min-height: 86px;
+    width: min(560px, calc(100% - 24px));
     padding: 10px;
   }
 
+  .energy-card h2 {
+    margin-bottom: 9px;
+    font-size: 1.08rem;
+  }
+
+  .energy-grid {
+    gap: 6px;
+  }
+
+  .energy-grid .energy-choice {
+    min-height: 74px;
+    padding: 9px 10px;
+  }
+
   .energy-grid .energy-choice em {
-    min-height: 18px;
+    min-height: 16px;
     padding: 0 6px;
-    font-size: 0.56rem;
+    font-size: 0.5rem;
   }
 
   .energy-grid strong {
-    font-size: 1.02rem;
+    font-size: 0.94rem;
   }
 
   .energy-grid small {
     min-height: 0;
-    font-size: 0.66rem;
+    font-size: 0.58rem;
   }
 
   .energy-grid .energy-choice::after {
-    right: 8px;
-    bottom: 8px;
-    width: 26px;
-    height: 26px;
+    inset: 0;
+    width: auto;
+    height: auto;
   }
 
   .energy-grid .energy-choice > i {
-    right: 17px;
-    bottom: 17px;
-    width: 8px;
-    height: 8px;
+    right: 10px;
+    top: 50%;
+    bottom: auto;
+    width: 6px;
+    height: 6px;
   }
 
   .mission-panel,

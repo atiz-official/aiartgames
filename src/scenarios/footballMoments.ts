@@ -11,7 +11,7 @@ export const footballMomentScenarios: PlayableMomentScenario[] = [
     decisionTime: 3.05,
     setupLabel: 'Decision window incoming',
     readyCta: 'Start remix',
-    choosePrompt: 'Choose timeline energy',
+    choosePrompt: 'Pick the kind of timeline',
     timingCta: 'Tap to kick',
     resultShareTitle: 'Penalty Timeline Remix',
     markers: {
@@ -19,10 +19,10 @@ export const footballMomentScenarios: PlayableMomentScenario[] = [
       goal: { x: 27, y: 22, width: 46, height: 19 },
     },
     energyCopy: {
-      normal: { title: 'Normal', kicker: 'Canon-safe', description: 'Reality stays mostly legal.' },
-      hero: { title: 'Hero', kicker: 'Top bins', description: 'Bias toward cinematic redemption.' },
-      chaos: { title: 'Chaos', kicker: 'Viral mode', description: 'The internet enters the pitch.' },
-      cursed: { title: 'Cursed', kicker: 'VAR glitch', description: 'Forbidden doors open.' },
+      normal: { title: 'Realistic', kicker: 'Normal match', description: 'Goal, save, post, miss.' },
+      hero: { title: 'Cinematic', kicker: 'Highlight reel', description: 'Perfect finish, big emotion.' },
+      chaos: { title: 'Absurd', kicker: 'Meme branch', description: 'Unexpected pitch invasion.' },
+      cursed: { title: 'Supernatural', kicker: 'Glitch branch', description: 'Reality breaks the rules.' },
     },
   },
 ]
