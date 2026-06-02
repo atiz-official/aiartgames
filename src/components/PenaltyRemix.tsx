@@ -155,19 +155,67 @@ function GoalImpact({ outcome }: { outcome: TimelineOutcome }) {
   )
 }
 
-function FanIntervention() {
+function FanIntervention({ source, cloneTime }: { source: string; cloneTime: number }) {
   return (
     <div className="fan-intervention" aria-hidden>
       <span className="fan-entry-burst" />
-      <span className="fan-runner">
-        <i className="fan-shadow" />
-        <i className="fan-head" />
-        <i className="fan-torso" />
-        <i className="fan-arm fan-arm-left" />
-        <i className="fan-arm fan-arm-right" />
-        <i className="fan-leg fan-leg-left" />
-        <i className="fan-leg fan-leg-right" />
+      <span className="fan-video-clone">
+        <video
+          src={source}
+          muted
+          playsInline
+          autoPlay
+          loop
+          onLoadedMetadata={(event) => {
+            event.currentTarget.currentTime = Math.max(0, cloneTime - 0.42)
+            void event.currentTarget.play().catch(() => undefined)
+          }}
+        />
       </span>
+      <span className="fan-runner">
+        <i className="fan-motion-smear" />
+        <svg className="fan-svg" viewBox="0 0 120 210" role="presentation">
+          <defs>
+            <linearGradient id="fanSkin" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#d4a17b" />
+              <stop offset="68%" stopColor="#9a6848" />
+              <stop offset="100%" stopColor="#6f4735" />
+            </linearGradient>
+            <linearGradient id="fanShirt" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#f4f0e6" />
+              <stop offset="72%" stopColor="#d3d1c8" />
+              <stop offset="100%" stopColor="#8e948e" />
+            </linearGradient>
+            <linearGradient id="fanRedStripe" x1="0" x2="1" y1="0" y2="1">
+              <stop offset="0%" stopColor="#bb2838" />
+              <stop offset="100%" stopColor="#63131d" />
+            </linearGradient>
+          </defs>
+          <ellipse className="fan-shadow" cx="58" cy="195" rx="38" ry="8" />
+          <g className="fan-human">
+            <path className="fan-leg-shape fan-leg-back" d="M54 111 C48 133 39 158 31 190 L44 192 C53 164 61 137 65 115 Z" />
+            <path className="fan-leg-shape fan-leg-front" d="M68 111 C79 134 91 158 103 186 L113 180 C101 151 90 128 77 106 Z" />
+            <path className="fan-shoe" d="M22 188 L45 190 L45 199 L18 199 Z" />
+            <path className="fan-shoe" d="M97 181 L116 174 L121 182 L104 193 Z" />
+            <path className="fan-arm-shape fan-arm-back" d="M49 52 C38 70 30 91 22 116 L33 120 C41 96 49 75 58 59 Z" />
+            <path className="fan-arm-shape fan-arm-front" d="M75 52 C92 66 105 81 116 100 L109 110 C96 91 84 76 68 62 Z" />
+            <path className="fan-shorts" d="M45 98 L76 97 L83 121 L66 124 L61 108 L51 126 L35 121 Z" />
+            <path className="fan-torso-real" d="M42 40 C51 33 68 33 78 42 C83 61 83 81 76 99 C66 106 49 106 39 98 C35 78 35 58 42 40 Z" />
+            <path className="fan-red-stripe" d="M56 36 L66 36 L68 101 L57 104 Z" />
+            <path className="fan-shirt-shadow" d="M45 45 C58 56 70 73 76 96 C67 103 54 104 44 96 Z" />
+            <path className="fan-shirt-fold fold-left" d="M48 48 C46 68 47 84 51 100" />
+            <path className="fan-shirt-fold fold-right" d="M72 48 C74 68 72 84 69 100" />
+            <circle className="fan-neck-real" cx="61" cy="37" r="6" />
+            <path className="fan-face-real" d="M49 23 C49 13 56 7 64 8 C73 9 79 16 78 26 C77 36 70 43 61 42 C53 41 49 34 49 23 Z" />
+            <path className="fan-hair-real" d="M49 24 C49 10 68 4 78 20 C69 15 58 16 49 24 Z" />
+            <path className="fan-face-shade" d="M66 13 C76 18 75 35 64 41 C70 31 70 21 66 13 Z" />
+            <circle className="fan-eye eye-left" cx="58" cy="26" r="1.2" />
+            <circle className="fan-eye eye-right" cx="67" cy="26" r="1.2" />
+            <path className="fan-nose" d="M63 27 L60 34 L65 34" />
+          </g>
+        </svg>
+      </span>
+      <i className="fan-boot-strike" />
       <span className="fan-kick-flash" />
       <span className="fan-caption">FAN TAKES THE SHOT</span>
     </div>
@@ -205,6 +253,21 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     }
   }, [phase])
 
+  useEffect(() => {
+    if (phase !== 'setup') return
+
+    const fallback = window.setTimeout(() => {
+      const video = videoRef.current
+      if (video && video.currentTime < scenario.decisionTime) {
+        video.currentTime = scenario.decisionTime
+      }
+      video?.pause()
+      setPhase('choose')
+    }, scenario.decisionTime * 1000 + 650)
+
+    return () => window.clearTimeout(fallback)
+  }, [phase, scenario.decisionTime])
+
   async function start() {
     setPhase('setup')
     setEnergy(null)
@@ -215,7 +278,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     video.currentTime = 0
     video.playbackRate = 1
     playFootballCue('whistle')
-    await video.play()
+    await video.play().catch(() => undefined)
   }
 
   function onTimeUpdate() {
@@ -314,7 +377,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
         {outcome && (
           <>
             <ActionShock outcome={outcome} />
-            {outcome.effect === 'fan' && <FanIntervention />}
+            {outcome.effect === 'fan' && <FanIntervention source={source} cloneTime={scenario.decisionTime} />}
             <KeeperReplacementMask />
             <KeeperReaction outcome={outcome} />
             <RealisticBallFlight outcome={outcome} ballStart={scenario.markers.ballStart} />

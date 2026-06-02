@@ -1527,22 +1527,22 @@
 @keyframes fan-rush-kick {
   0% {
     opacity: 0;
-    transform: translate(-58vw, 18vh) scale(0.28) rotate(10deg);
+    transform: translate(-40vw, 7vh) scale(0.42) rotate(6deg);
   }
   18% {
-    opacity: 1;
+    opacity: 0.7;
   }
   44% {
-    opacity: 1;
-    transform: translate(20vw, 1vh) scale(0.86) rotate(-6deg);
+    opacity: 0.82;
+    transform: translate(18vw, -4vh) scale(0.78) rotate(-5deg);
   }
   63% {
-    opacity: 1;
-    transform: translate(34vw, -6vh) scale(1.12) rotate(-21deg);
+    opacity: 0.86;
+    transform: translate(31vw, -8.5vh) scale(0.93) rotate(-18deg);
   }
   100% {
-    opacity: 0.24;
-    transform: translate(54vw, -11vh) scale(0.9) rotate(-32deg);
+    opacity: 0.14;
+    transform: translate(49vw, -12vh) scale(0.72) rotate(-29deg);
   }
 }
 
@@ -1560,6 +1560,28 @@
   }
 }
 
+@keyframes fan-video-clone-rush {
+  0% {
+    opacity: 0;
+    transform: translate(-260px, 54px) scale(0.96) rotate(-2deg);
+  }
+  22% {
+    opacity: 0.34;
+  }
+  52% {
+    opacity: 0.64;
+    transform: translate(-124px, 6px) scale(1.01) rotate(-4deg);
+  }
+  66% {
+    opacity: 0.74;
+    transform: translate(-78px, -14px) scale(1.04) rotate(-7deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(24px, -28px) scale(0.98) rotate(-10deg);
+  }
+}
+
 @keyframes fan-kick-flash {
   0%,
   54% {
@@ -1573,6 +1595,107 @@
   100% {
     opacity: 0;
     transform: translate(-50%, -50%) rotate(-15deg) scale(1.7);
+  }
+}
+
+@keyframes fan-boot-strike {
+  0%,
+  46% {
+    opacity: 0;
+    transform: translate(-88px, 26px) rotate(-19deg) scale(0.62);
+  }
+  58% {
+    opacity: 0.24;
+    transform: translate(-14px, 4px) rotate(-14deg) scale(0.94);
+  }
+  70% {
+    opacity: 0.16;
+    transform: translate(18px, -2px) rotate(-10deg) scale(1.02);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(64px, -16px) rotate(-7deg) scale(0.88);
+  }
+}
+
+@keyframes fan-smear {
+  0%,
+  12% {
+    opacity: 0;
+    transform: translate(-180px, 58px) rotate(-11deg) scaleX(0.3);
+  }
+  38%,
+  66% {
+    opacity: 0.52;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(360px, 14px) rotate(-11deg) scaleX(1.45);
+  }
+}
+
+@keyframes fan-human-stride {
+  0%,
+  100% {
+    transform: skewX(0deg) rotate(0deg);
+  }
+  47% {
+    transform: skewX(-4deg) rotate(-2deg);
+  }
+  64% {
+    transform: skewX(5deg) rotate(4deg);
+  }
+}
+
+@keyframes fan-leg-drive-front {
+  0%,
+  100% {
+    transform: rotate(4deg) translateY(0);
+  }
+  48% {
+    transform: rotate(-18deg) translateY(-3px);
+  }
+  66% {
+    transform: rotate(17deg) translateY(2px);
+  }
+}
+
+@keyframes fan-leg-drive-back {
+  0%,
+  100% {
+    transform: rotate(-5deg) translateY(0);
+  }
+  46% {
+    transform: rotate(22deg) translateY(2px);
+  }
+  67% {
+    transform: rotate(-18deg) translateY(-2px);
+  }
+}
+
+@keyframes fan-arm-drive-front {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  48% {
+    transform: rotate(24deg);
+  }
+  66% {
+    transform: rotate(-18deg);
+  }
+}
+
+@keyframes fan-arm-drive-back {
+  0%,
+  100% {
+    transform: rotate(5deg);
+  }
+  48% {
+    transform: rotate(-27deg);
+  }
+  66% {
+    transform: rotate(20deg);
   }
 }
 
@@ -1758,7 +1881,9 @@
 
 .fan-entry-burst,
 .fan-kick-flash,
+.fan-boot-strike,
 .fan-caption,
+.fan-video-clone,
 .fan-runner,
 .fan-runner i {
   position: absolute;
@@ -1781,100 +1906,224 @@
 }
 
 .fan-runner {
-  left: 8%;
-  top: 64%;
-  width: 112px;
-  height: 196px;
-  filter: drop-shadow(0 16px 16px rgba(0, 0, 0, 0.46));
+  left: 10.5%;
+  top: 62.5%;
+  width: clamp(64px, 7.2vw, 104px);
+  height: clamp(118px, 13vw, 188px);
+  filter: blur(0.34px) saturate(0.68) contrast(0.9) brightness(0.86) drop-shadow(0 12px 10px rgba(0, 0, 0, 0.36));
   opacity: 0;
   transform-origin: 50% 86%;
   animation: fan-rush-kick 1.7s cubic-bezier(0.12, 0.78, 0.14, 1) 40ms both;
 }
 
-.fan-head {
-  left: 43px;
-  top: 2px;
-  width: 25px;
-  height: 30px;
-  border-radius: 48% 48% 44% 44%;
-  background: linear-gradient(135deg, #edc095, #825334);
-  box-shadow: inset -4px -2px 5px rgba(0, 0, 0, 0.28);
+.fan-video-clone {
+  z-index: 4;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  mix-blend-mode: normal;
+  transform-origin: 64% 76%;
+  animation: fan-video-clone-rush 1.7s cubic-bezier(0.18, 0.76, 0.18, 1) 40ms both;
+  -webkit-mask-image:
+    radial-gradient(ellipse at 64% 73%, #000 0 9%, rgba(0, 0, 0, 0.82) 13%, rgba(0, 0, 0, 0.24) 18%, transparent 26%),
+    linear-gradient(#000, #000);
+  -webkit-mask-composite: source-in;
+  mask-image:
+    radial-gradient(ellipse at 64% 73%, #000 0 9%, rgba(0, 0, 0, 0.82) 13%, rgba(0, 0, 0, 0.24) 18%, transparent 26%),
+    linear-gradient(#000, #000);
+  mask-composite: intersect;
+  filter: blur(0.8px) saturate(0.82) contrast(0.94) brightness(0.9) drop-shadow(0 12px 10px rgba(0, 0, 0, 0.34));
 }
 
-.fan-torso {
-  left: 35px;
-  top: 36px;
-  width: 42px;
-  height: 74px;
-  border-radius: 12px 12px 9px 9px;
+.fan-video-clone video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fan-motion-smear {
+  left: -18%;
+  top: 46%;
+  width: 132%;
+  height: 36px;
+  border-radius: 999px;
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.95) 0 36%, transparent 36% 46%, rgba(255, 255, 255, 0.95) 46% 100%),
-    linear-gradient(180deg, #ff3d4d, #9c1320);
-  box-shadow: inset -8px -8px 12px rgba(0, 0, 0, 0.22);
+    radial-gradient(ellipse at 62% 44%, rgba(239, 238, 220, 0.18), transparent 42%),
+    linear-gradient(90deg, transparent, rgba(191, 52, 62, 0.13), rgba(244, 238, 213, 0.14), transparent);
+  filter: blur(10px) saturate(0.7);
+  opacity: 0;
+  mix-blend-mode: screen;
+  animation: fan-smear 1.65s ease 30ms both;
 }
 
-.fan-arm {
-  top: 46px;
-  width: 12px;
-  height: 68px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #edc095, #825334);
-  transform-origin: top center;
+.fan-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  opacity: 0;
 }
 
-.fan-arm-left {
-  left: 24px;
-  rotate: 54deg;
-  animation: fan-arm-left 1.7s ease both;
+.fan-human {
+  opacity: 0.72;
+  transform-box: fill-box;
+  transform-origin: 50% 72%;
+  filter: blur(0.55px);
+  animation: fan-human-stride 1.7s ease both;
 }
 
-.fan-arm-right {
-  right: 22px;
-  rotate: -48deg;
-  animation: fan-arm-right 1.7s ease both;
+.fan-svg .fan-shadow {
+  fill: rgba(0, 0, 0, 0.32);
+  filter: blur(4px);
 }
 
-.fan-leg {
-  top: 106px;
-  width: 15px;
-  height: 78px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #f6f2e7 0 68%, #151922 68% 100%);
-  transform-origin: top center;
+.fan-torso-real {
+  fill: url(#fanShirt);
+  stroke: rgba(12, 14, 13, 0.22);
+  stroke-width: 1;
 }
 
-.fan-leg-left {
-  left: 44px;
-  rotate: -28deg;
-  animation: fan-leg-left 1.7s ease both;
+.fan-red-stripe {
+  fill: url(#fanRedStripe);
+  opacity: 0.72;
 }
 
-.fan-leg-right {
-  left: 66px;
-  rotate: 42deg;
-  animation: fan-leg-right 1.7s ease both;
+.fan-shirt-shadow {
+  fill: rgba(28, 33, 30, 0.2);
+  mix-blend-mode: multiply;
 }
 
-.fan-shadow {
-  left: 9px;
-  top: 178px;
-  width: 94px;
-  height: 17px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.38);
-  filter: blur(5px);
+.fan-shirt-fold {
+  fill: none;
+  stroke: rgba(51, 58, 52, 0.24);
+  stroke-linecap: round;
+  stroke-width: 1.2;
+}
+
+.fan-arm-shape,
+.fan-neck-real,
+.fan-face-real {
+  fill: url(#fanSkin);
+}
+
+.fan-arm-shape {
+  stroke: rgba(22, 15, 13, 0.18);
+  stroke-width: 0.9;
+  transform-box: fill-box;
+  transform-origin: 50% 8%;
+}
+
+.fan-arm-front {
+  animation: fan-arm-drive-front 1.7s ease both;
+}
+
+.fan-arm-back {
+  opacity: 0.8;
+  animation: fan-arm-drive-back 1.7s ease both;
+}
+
+.fan-leg-shape {
+  fill: #d8d4c9;
+  stroke: rgba(20, 19, 18, 0.22);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: 50% 6%;
+}
+
+.fan-leg-front {
+  animation: fan-leg-drive-front 1.7s ease both;
+}
+
+.fan-leg-back {
+  opacity: 0.82;
+  animation: fan-leg-drive-back 1.7s ease both;
+}
+
+.fan-shorts {
+  fill: #eee9dc;
+  stroke: rgba(18, 18, 18, 0.18);
+  stroke-width: 1;
+}
+
+.fan-shoe {
+  fill: #10141d;
+}
+
+.fan-hair-real {
+  fill: #201714;
+}
+
+.fan-face-shade {
+  fill: rgba(70, 43, 34, 0.22);
+  mix-blend-mode: multiply;
+}
+
+.fan-eye {
+  fill: rgba(15, 13, 12, 0.68);
+}
+
+.fan-nose {
+  fill: none;
+  stroke: rgba(37, 25, 21, 0.42);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.1;
+}
+
+.fan-boot-strike {
+  z-index: 5;
+  left: 43.4%;
+  top: 67.8%;
+  width: clamp(86px, 9vw, 128px);
+  height: clamp(42px, 4.7vw, 68px);
+  opacity: 0;
+  transform-origin: 15% 50%;
+  filter: blur(3.4px) saturate(0.5) contrast(0.82) brightness(0.76) drop-shadow(0 7px 6px rgba(0, 0, 0, 0.28));
+  animation: fan-boot-strike 1.7s cubic-bezier(0.2, 0.76, 0.18, 1) 40ms both;
+}
+
+.fan-boot-strike::before,
+.fan-boot-strike::after {
+  position: absolute;
+  content: '';
+  display: block;
+}
+
+.fan-boot-strike::before {
+  left: 0;
+  top: 13%;
+  width: 76%;
+  height: 46%;
+  border-radius: 999px 32px 32px 999px;
+  background:
+    linear-gradient(90deg, rgba(238, 233, 219, 0.92) 0 62%, rgba(177, 172, 160, 0.82) 63% 100%),
+    radial-gradient(ellipse at 20% 35%, rgba(255, 255, 255, 0.35), transparent 48%);
+  clip-path: polygon(0 20%, 76% 0, 100% 42%, 76% 100%, 5% 72%);
+}
+
+.fan-boot-strike::after {
+  right: 0;
+  top: 32%;
+  width: 43%;
+  height: 45%;
+  border-radius: 38% 18% 32% 44%;
+  background:
+    linear-gradient(145deg, rgba(12, 16, 22, 0.98), rgba(36, 45, 55, 0.9) 55%, rgba(6, 8, 10, 0.98)),
+    radial-gradient(ellipse at 70% 35%, rgba(255, 255, 255, 0.18), transparent 32%);
+  clip-path: polygon(0 20%, 68% 3%, 100% 36%, 88% 78%, 18% 96%);
 }
 
 .fan-kick-flash {
-  left: 42.5%;
-  top: 69.5%;
-  width: 94px;
-  height: 50px;
+  left: 41.2%;
+  top: 68.6%;
+  width: 72px;
+  height: 36px;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 35% 50%, rgba(255, 255, 255, 0.9), transparent 25%),
-    linear-gradient(90deg, rgba(173, 255, 207, 0.85), transparent);
-  filter: blur(2px);
+    radial-gradient(circle at 35% 50%, rgba(255, 255, 255, 0.72), transparent 25%),
+    linear-gradient(90deg, rgba(220, 255, 215, 0.34), transparent);
+  filter: blur(3.5px) saturate(0.82);
   opacity: 0;
   transform: translate(-50%, -50%) rotate(-15deg);
   animation: fan-kick-flash 1.7s ease both;
@@ -1894,6 +2143,18 @@
   font-weight: 1000;
   transform: translate(-50%, -50%) rotate(-4deg);
   animation: chaos-pop 1.7s ease both;
+}
+
+.fan-caption {
+  left: 34%;
+  top: 50%;
+  padding: 7px 10px;
+  color: rgba(4, 12, 9, 0.9);
+  background: rgba(174, 255, 201, 0.86);
+  box-shadow: 0 0 18px rgba(157, 255, 199, 0.38);
+  font-size: clamp(0.66rem, 1.35vw, 0.95rem);
+  letter-spacing: 0.03em;
+  transform: translate(-50%, -50%) rotate(-4deg);
 }
 
 .var-portal {
