@@ -64,20 +64,27 @@ function ActionShock({ outcome }: { outcome: TimelineOutcome }) {
 function KeeperReaction({ outcome }: { outcome: TimelineOutcome }) {
   return (
     <div className={`keeper-reaction dive-${outcome.keeperDive} effect-${outcome.effect}`} aria-hidden>
-      <span className="keeper-afterimage after-a" />
-      <span className="keeper-afterimage after-b" />
       <span className="keeper-dive-trail" />
       <span className="keeper-reach-line" />
-      <span className="keeper-shadow" />
-      <span className="keeper-head" />
-      <span className="keeper-glove glove-left" />
-      <span className="keeper-glove glove-right" />
-      <span className="keeper-arm arm-left" />
-      <span className="keeper-arm arm-right" />
-      <span className="keeper-shoulders" />
-      <span className="keeper-body" />
-      <span className="keeper-leg leg-left" />
-      <span className="keeper-leg leg-right" />
+      <svg className="keeper-svg" viewBox="0 0 100 170" role="presentation">
+        <ellipse className="keeper-ground-shadow" cx="50" cy="158" rx="25" ry="7" />
+        <g className="keeper-human">
+          <path className="keeper-limb keeper-leg-left" d="M43 90 C37 104 31 124 25 151" />
+          <path className="keeper-limb keeper-leg-right" d="M58 90 C65 107 70 126 76 150" />
+          <path className="keeper-boot" d="M17 151 L31 151 L31 158 L14 159 Z" />
+          <path className="keeper-boot" d="M70 149 L84 151 L88 158 L72 158 Z" />
+          <path className="keeper-limb keeper-arm-left" d="M38 48 C27 60 18 76 11 97" />
+          <path className="keeper-limb keeper-arm-right" d="M62 48 C74 62 83 78 91 99" />
+          <circle className="keeper-real-glove" cx="10" cy="99" r="7" />
+          <circle className="keeper-real-glove" cx="92" cy="100" r="7" />
+          <path className="keeper-shorts" d="M37 82 L63 82 L68 101 L55 104 L50 91 L44 104 L31 101 Z" />
+          <path className="keeper-torso" d="M36 38 C43 33 57 33 65 39 L68 79 C61 87 42 87 34 80 Z" />
+          <path className="keeper-torso-light" d="M43 39 C50 36 58 37 63 41 L62 58 C55 54 48 51 40 50 Z" />
+          <circle className="keeper-neck" cx="50" cy="36" r="5" />
+          <circle className="keeper-face" cx="50" cy="24" r="11" />
+          <path className="keeper-hair" d="M39 23 C41 12 56 10 62 21 C55 17 47 18 39 23 Z" />
+        </g>
+      </svg>
     </div>
   )
 }
