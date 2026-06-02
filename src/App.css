@@ -567,18 +567,14 @@
 
 .keeper-replacement-mask {
   z-index: 7;
-  left: 50.2%;
-  top: 38.8%;
-  width: clamp(94px, 10vw, 124px);
-  height: clamp(132px, 16.5vw, 176px);
+  left: 50.1%;
+  top: 39.1%;
+  width: clamp(78px, 7.4vw, 94px);
+  height: clamp(126px, 14.5vw, 154px);
   opacity: 0;
-  overflow: hidden;
-  border-radius: 10px;
-  background:
-    linear-gradient(180deg, rgba(112, 122, 126, 0.32), rgba(25, 55, 91, 0.74) 34%, rgba(24, 48, 72, 0.86) 62%, rgba(24, 40, 20, 0.86) 100%);
-  backdrop-filter: blur(7px) saturate(0.72);
+  overflow: visible;
   transform: translate(-50%, -50%);
-  animation: keeper-mask-in 1.9s ease 40ms forwards;
+  animation: keeper-mask-in 1.85s ease 30ms forwards;
 }
 
 .keeper-replacement-mask span {
@@ -586,33 +582,78 @@
   display: block;
 }
 
-.mask-board {
-  left: -16%;
-  right: -16%;
-  top: 25%;
-  height: 48%;
+.mask-soft-erase {
+  left: -6%;
+  top: -1%;
+  width: 112%;
+  height: 104%;
+  border-radius: 28px;
   background:
-    linear-gradient(90deg, rgba(24, 55, 96, 0.98), rgba(36, 82, 140, 0.98), rgba(18, 42, 74, 0.98)),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.14) 0 1px, transparent 1px 18px);
-  filter: blur(0.4px);
+    linear-gradient(180deg, rgba(74, 82, 84, 0.72) 0 15%, rgba(31, 69, 120, 0.98) 16% 58%, rgba(22, 48, 25, 0.98) 59% 100%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 48%, #000 0 52%, rgba(0, 0, 0, 0.72) 64%, transparent 88%);
+  mask-image: radial-gradient(ellipse at 50% 48%, #000 0 52%, rgba(0, 0, 0, 0.72) 64%, transparent 88%);
+  filter: blur(2.8px) saturate(0.62);
   opacity: 1;
 }
 
-.mask-grass {
-  left: -12%;
-  right: -12%;
-  top: 62%;
-  bottom: -10%;
+.mask-keeper-fill {
+  left: 12%;
+  top: 4%;
+  width: 76%;
+  height: 92%;
+  border-radius: 999px;
   background:
-    radial-gradient(ellipse at 50% 12%, rgba(22, 44, 23, 0.94), transparent 55%),
-    linear-gradient(180deg, rgba(30, 55, 24, 0.94), rgba(18, 35, 18, 0.98));
-  filter: blur(1px);
+    linear-gradient(180deg, rgba(78, 86, 88, 0.82) 0 17%, rgba(31, 68, 116, 0.98) 18% 58%, rgba(26, 54, 26, 0.98) 59% 100%),
+    radial-gradient(ellipse at 50% 12%, rgba(190, 200, 198, 0.42), transparent 28%);
+  -webkit-clip-path: polygon(38% 0, 62% 0, 74% 12%, 70% 27%, 88% 42%, 72% 55%, 70% 68%, 90% 99%, 57% 100%, 50% 74%, 43% 100%, 10% 99%, 30% 68%, 28% 55%, 12% 42%, 30% 27%, 26% 12%);
+  clip-path: polygon(38% 0, 62% 0, 74% 12%, 70% 27%, 88% 42%, 72% 55%, 70% 68%, 90% 99%, 57% 100%, 50% 74%, 43% 100%, 10% 99%, 30% 68%, 28% 55%, 12% 42%, 30% 27%, 26% 12%);
+  filter: blur(1px) saturate(0.74);
+  opacity: 0.82;
+}
+
+.mask-limb {
+  width: 15%;
+  height: 38%;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(35, 72, 116, 0.9), rgba(28, 52, 34, 0.92));
+  filter: blur(1px) saturate(0.78);
+  opacity: 0.86;
+  transform-origin: top center;
+}
+
+.mask-arm-left {
+  left: 15%;
+  top: 31%;
+  transform: rotate(26deg);
+}
+
+.mask-arm-right {
+  right: 15%;
+  top: 31%;
+  transform: rotate(-26deg);
+}
+
+.mask-leg-left {
+  left: 35%;
+  top: 61%;
+  height: 37%;
+  background: linear-gradient(180deg, rgba(30, 54, 28, 0.9), rgba(18, 31, 18, 0.94));
+  transform: rotate(12deg);
+}
+
+.mask-leg-right {
+  right: 35%;
+  top: 61%;
+  height: 37%;
+  background: linear-gradient(180deg, rgba(30, 54, 28, 0.9), rgba(18, 31, 18, 0.94));
+  transform: rotate(-12deg);
 }
 
 .mask-net {
   z-index: 2;
-  opacity: 0.5;
-  background: rgba(230, 238, 232, 0.58);
+  opacity: 0.34;
+  background: rgba(232, 238, 232, 0.48);
   mix-blend-mode: screen;
 }
 
@@ -620,7 +661,7 @@
 .net-v2,
 .net-v3 {
   top: 0;
-  bottom: 18%;
+  bottom: 14%;
   width: 1px;
 }
 
@@ -659,7 +700,7 @@
   width: 76px;
   height: 128px;
   opacity: 0;
-  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, 0.5)) saturate(0.92);
+  filter: blur(0.25px) drop-shadow(0 10px 12px rgba(0, 0, 0, 0.46)) saturate(0.74) contrast(0.9);
   transform-origin: 50% 72%;
   animation: keeper-hold 1.72s cubic-bezier(0.16, 0.8, 0.12, 1) 60ms forwards;
 }
@@ -683,7 +724,7 @@
 
 .keeper-limb {
   fill: none;
-  stroke: #143b2d;
+  stroke: #17372c;
   stroke-width: 11;
   stroke-linecap: round;
   stroke-linejoin: round;
@@ -691,13 +732,13 @@
 
 .keeper-arm-left,
 .keeper-arm-right {
-  stroke: #19543e;
+  stroke: #1b4a38;
   stroke-width: 10;
 }
 
 .keeper-leg-left,
 .keeper-leg-right {
-  stroke: #15252a;
+  stroke: #142126;
   stroke-width: 12;
 }
 
@@ -706,13 +747,13 @@
 }
 
 .keeper-svg .keeper-torso {
-  fill: #1e6b49;
-  stroke: rgba(224, 255, 236, 0.42);
+  fill: #286047;
+  stroke: rgba(204, 230, 214, 0.24);
   stroke-width: 1.2;
 }
 
 .keeper-torso-light {
-  fill: rgba(128, 221, 160, 0.34);
+  fill: rgba(128, 185, 150, 0.22);
 }
 
 .keeper-shorts {
@@ -731,8 +772,8 @@
 }
 
 .keeper-real-glove {
-  fill: #f0f5ed;
-  stroke: rgba(8, 14, 18, 0.45);
+  fill: rgba(234, 238, 230, 0.84);
+  stroke: rgba(8, 14, 18, 0.42);
   stroke-width: 1.4;
 }
 
@@ -860,7 +901,7 @@
   width: 112px;
   height: 42px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(176, 255, 204, 0.16), transparent);
+  background: linear-gradient(90deg, transparent, rgba(196, 218, 204, 0.08), transparent);
   filter: blur(9px);
   opacity: 0;
 }
@@ -871,7 +912,7 @@
   width: 82px;
   height: 3px;
   border-radius: 999px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(245, 255, 249, 0.42), rgba(157, 255, 199, 0));
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(245, 255, 249, 0.22), rgba(157, 255, 199, 0));
   opacity: 0;
   transform-origin: center;
 }

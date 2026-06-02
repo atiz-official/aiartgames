@@ -64,13 +64,17 @@ function ActionShock({ outcome }: { outcome: TimelineOutcome }) {
 function KeeperReplacementMask() {
   return (
     <div className="keeper-replacement-mask" aria-hidden>
+      <span className="mask-soft-erase" />
+      <span className="mask-keeper-fill" />
+      <span className="mask-limb mask-arm-left" />
+      <span className="mask-limb mask-arm-right" />
+      <span className="mask-limb mask-leg-left" />
+      <span className="mask-limb mask-leg-right" />
       <span className="mask-net net-v1" />
       <span className="mask-net net-v2" />
       <span className="mask-net net-v3" />
       <span className="mask-net net-h1" />
       <span className="mask-net net-h2" />
-      <span className="mask-board" />
-      <span className="mask-grass" />
     </div>
   )
 }
