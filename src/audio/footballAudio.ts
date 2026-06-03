@@ -1,10 +1,11 @@
-import type { CrowdBedId, TimelineOutcome } from '../engine/types'
+import type { CommentaryStyleId, CrowdBedId, TimelineOutcome } from '../engine/types'
 
 type FootballCue = 'whistle' | 'kick' | 'crowd' | 'portal' | 'tension' | 'net' | 'save' | 'post' | 'chaos'
 
 type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof AudioContext }
 
 let audioContext: AudioContext | null = null
+const commentaryTimers: number[] = []
 
 function getAudioContext() {
   const AudioContextClass = window.AudioContext || (window as BrowserWindowWithAudio).webkitAudioContext
@@ -153,6 +154,66 @@ function commentarySting(outcome: TimelineOutcome) {
   }
 }
 
+function hasThai(text: string) {
+  return /[\u0E00-\u0E7F]/.test(text)
+}
+
+function getCommentaryVoice(lang: string) {
+  if (!('speechSynthesis' in window)) return undefined
+  const voices = window.speechSynthesis.getVoices()
+  const normalizedLang = lang.toLowerCase()
+  return (
+    voices.find((voice) => voice.lang.toLowerCase().startsWith(normalizedLang)) ??
+    voices.find((voice) => voice.lang.toLowerCase().startsWith(normalizedLang.slice(0, 2))) ??
+    voices.find((voice) => voice.lang.toLowerCase().startsWith('en'))
+  )
+}
+
+function getSpeechProfile(style: CommentaryStyleId) {
+  if (style === 'thai-chaos') return { rate: 1.08, pitch: 1.16, volume: 0.9 }
+  if (style === 'english-drama') return { rate: 0.94, pitch: 1.0, volume: 0.88 }
+  if (style === 'var-room') return { rate: 0.86, pitch: 0.78, volume: 0.84 }
+  if (style === 'meme-table') return { rate: 1.12, pitch: 1.18, volume: 0.9 }
+  return { rate: 0.82, pitch: 0.82, volume: 0.78 }
+}
+
+function getFollowUpLine(outcome: TimelineOutcome) {
+  if (outcome.effect === 'fan') return 'That is not in the laws of the game, but it is absolutely in this timeline.'
+  if (outcome.effect === 'portal') return 'VAR is still checking which universe should restart play.'
+  if (outcome.impact === 'save') return 'The keeper read the future, launched himself, and kept this story alive.'
+  if (outcome.impact === 'post') return 'Listen to that silence. One inch just changed the whole night.'
+  if (outcome.impact === 'miss') return 'The stadium cannot decide whether to laugh, cry, or pretend that never happened.'
+  if (outcome.rarityTier === 'legendary') return 'Clip that. This is the version people will argue about tomorrow.'
+  if (outcome.commentaryStyle === 'thai-chaos') return 'สนามแตกแล้วครับ ไทม์ไลน์นี้เปลี่ยนทุกอย่าง!'
+  return 'The crowd erupts, the camera shakes, and the timeline locks in.'
+}
+
+function speakCommentaryLine(text: string, style: CommentaryStyleId, delay: number) {
+  if (!('speechSynthesis' in window)) return
+
+  const timer = window.setTimeout(() => {
+    const lang = hasThai(text) ? 'th-TH' : 'en-US'
+    const profile = getSpeechProfile(style)
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.lang = lang
+    utterance.rate = profile.rate
+    utterance.pitch = profile.pitch
+    utterance.volume = profile.volume
+
+    const voice = getCommentaryVoice(lang)
+    if (voice) utterance.voice = voice
+
+    window.speechSynthesis.speak(utterance)
+  }, delay)
+
+  commentaryTimers.push(timer)
+}
+
+export function stopCommentary() {
+  commentaryTimers.splice(0).forEach((timer) => window.clearTimeout(timer))
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+}
+
 export function playFootballCue(kind: FootballCue) {
   if (kind === 'whistle') {
     tone(1440, 0.26, { gain: 0.12, type: 'square' })
@@ -214,6 +275,7 @@ export function playFootballCue(kind: FootballCue) {
 }
 
 export function playOutcomeCues(outcome: TimelineOutcome) {
+  stopCommentary()
   const effect = outcome.effect === 'fan' ? 'chaos' : outcome.effect === 'portal' ? 'portal' : 'crowd'
   window.setTimeout(() => playFootballCue(effect), effect === 'chaos' ? 80 : 0)
   window.setTimeout(() => {
@@ -224,4 +286,6 @@ export function playOutcomeCues(outcome: TimelineOutcome) {
   }, 670)
   window.setTimeout(() => crowdBed(outcome.crowdBed), 780)
   window.setTimeout(() => commentarySting(outcome), 1120)
+  speakCommentaryLine(outcome.commentatorLine, outcome.commentaryStyle, 940)
+  speakCommentaryLine(getFollowUpLine(outcome), outcome.commentaryStyle, 2600)
 }
