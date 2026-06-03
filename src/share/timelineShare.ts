@@ -1,8 +1,6 @@
 import type { PlayableMomentScenario, TimelineOutcome } from '../engine/types'
-import { getOutcomeCommentaryClips } from '../audio/commentaryVoicePack'
 
 type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof AudioContext }
-type DecodedCommentaryClip = { clip: ReturnType<typeof getOutcomeCommentaryClips>[number]; buffer: AudioBuffer }
 
 export function getTimelineLabel(seed: number) {
   return `#${seed.toString(16).toUpperCase()}`
@@ -190,52 +188,7 @@ function scheduleShareNoise(
   source.stop(start + duration + 0.08)
 }
 
-function scheduleShareCommentaryCadence(context: AudioContext, destination: AudioNode, outcome: TimelineOutcome, start: number) {
-  const words = Math.min(13, Math.max(5, outcome.commentatorLine.split(/\s+/).length))
-  const baseFrequency =
-    outcome.commentaryStyle === 'var-room'
-      ? 190
-      : outcome.commentaryStyle === 'meme-table'
-        ? 315
-        : outcome.commentaryStyle === 'thai-chaos'
-          ? 360
-          : 245
-
-  for (let index = 0; index < words; index += 1) {
-    const cadenceStart = start + index * 0.105
-    const emphasis = index === 0 || index === words - 1 ? 1.3 : 1
-    scheduleShareTone(context, destination, baseFrequency + Math.sin(index * 1.7) * 54, cadenceStart, 0.11, {
-      type: outcome.commentaryStyle === 'var-room' ? 'sawtooth' : 'triangle',
-      gain: 0.013 * emphasis,
-    })
-  }
-}
-
-async function loadShareCommentaryClips(context: AudioContext, outcome: TimelineOutcome): Promise<DecodedCommentaryClip[]> {
-  const clips = getOutcomeCommentaryClips(outcome)
-  return Promise.all(
-    clips.map(async (clip) => {
-      const response = await fetch(clip.url)
-      const bytes = await response.arrayBuffer()
-      return { clip, buffer: await context.decodeAudioData(bytes) }
-    }),
-  )
-}
-
-function scheduleShareCommentaryClips(context: AudioContext, destination: AudioNode, decodedClips: DecodedCommentaryClip[], start: number) {
-  decodedClips.forEach(({ clip, buffer }) => {
-    const source = context.createBufferSource()
-    const gain = context.createGain()
-    source.buffer = buffer
-    gain.gain.value = clip.volume
-    source.connect(gain)
-    gain.connect(destination)
-    source.start(start + clip.delay / 1000)
-  })
-}
-
-async function scheduleShareAudio(context: AudioContext, destination: AudioNode, outcome: TimelineOutcome) {
-  const decodedClips = await loadShareCommentaryClips(context, outcome)
+function scheduleShareAudio(context: AudioContext, destination: AudioNode, outcome: TimelineOutcome) {
   const start = context.currentTime + 0.12
 
   scheduleShareNoise(context, destination, start, 4.15, { gain: 0.035, lowpass: 2400, highpass: 160 })
@@ -268,18 +221,15 @@ async function scheduleShareAudio(context: AudioContext, destination: AudioNode,
     scheduleShareTone(context, destination, 205, start + 1.36, 0.5, { gain: 0.065, type: 'sawtooth' })
     scheduleShareNoise(context, destination, start + 1.46, 1.45, { gain: 0.108, lowpass: 5600, highpass: 260 })
   }
-
-  scheduleShareCommentaryCadence(context, destination, outcome, start + 2.18)
-  scheduleShareCommentaryClips(context, destination, decodedClips, start)
 }
 
-async function createShareAudioStream(outcome: TimelineOutcome) {
+function createShareAudioStream(outcome: TimelineOutcome) {
   const AudioContextClass = window.AudioContext || (window as BrowserWindowWithAudio).webkitAudioContext
   if (!AudioContextClass) return null
   const context = new AudioContextClass()
   if (context.state === 'suspended') void context.resume()
   const destination = context.createMediaStreamDestination()
-  await scheduleShareAudio(context, destination, outcome)
+  scheduleShareAudio(context, destination, outcome)
   return { context, stream: destination.stream }
 }
 
@@ -315,7 +265,7 @@ export async function exportTimelineClip(sourceUrl: string, scenario: PlayableMo
   const stream = canvas.captureStream(30)
   const shareAudio = await (async () => {
     try {
-      return await createShareAudioStream(outcome)
+      return createShareAudioStream(outcome)
     } catch {
       return null
     }

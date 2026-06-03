@@ -1,5 +1,4 @@
-import type { CommentaryStyleId, CrowdBedId, TimelineOutcome } from '../engine/types'
-import { getOutcomeCommentaryClips, getOutcomeFollowUpLine } from './commentaryVoicePack'
+import type { CrowdBedId, TimelineOutcome } from '../engine/types'
 
 type FootballCue = 'whistle' | 'kick' | 'crowd' | 'portal' | 'tension' | 'net' | 'save' | 'post' | 'chaos'
 
@@ -7,7 +6,6 @@ type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof Audi
 
 let audioContext: AudioContext | null = null
 const commentaryTimers: number[] = []
-const activeCommentaryClips: HTMLAudioElement[] = []
 
 function getAudioContext() {
   const AudioContextClass = window.AudioContext || (window as BrowserWindowWithAudio).webkitAudioContext
@@ -156,87 +154,8 @@ function commentarySting(outcome: TimelineOutcome) {
   }
 }
 
-function hasThai(text: string) {
-  return /[\u0E00-\u0E7F]/.test(text)
-}
-
-function getCommentaryVoice(lang: string) {
-  if (!('speechSynthesis' in window)) return undefined
-  const voices = window.speechSynthesis.getVoices()
-  const normalizedLang = lang.toLowerCase()
-  return (
-    voices.find((voice) => voice.lang.toLowerCase().startsWith(normalizedLang)) ??
-    voices.find((voice) => voice.lang.toLowerCase().startsWith(normalizedLang.slice(0, 2))) ??
-    voices.find((voice) => voice.lang.toLowerCase().startsWith('en'))
-  )
-}
-
-function getSpeechProfile(style: CommentaryStyleId) {
-  if (style === 'thai-chaos') return { rate: 1.08, pitch: 1.16, volume: 0.9 }
-  if (style === 'english-drama') return { rate: 0.94, pitch: 1, volume: 0.88 }
-  if (style === 'var-room') return { rate: 0.86, pitch: 0.78, volume: 0.84 }
-  if (style === 'meme-table') return { rate: 1.12, pitch: 1.18, volume: 0.9 }
-  return { rate: 0.82, pitch: 0.82, volume: 0.78 }
-}
-
-function speakCommentaryLine(text: string, style: CommentaryStyleId, delay: number) {
-  if (!('speechSynthesis' in window)) return
-
-  const timer = window.setTimeout(() => {
-    const lang = hasThai(text) ? 'th-TH' : 'en-US'
-    const profile = getSpeechProfile(style)
-    const utterance = new SpeechSynthesisUtterance(text)
-    utterance.lang = lang
-    utterance.rate = profile.rate
-    utterance.pitch = profile.pitch
-    utterance.volume = profile.volume
-
-    const voice = getCommentaryVoice(lang)
-    if (voice) utterance.voice = voice
-
-    window.speechSynthesis.speak(utterance)
-  }, delay)
-
-  commentaryTimers.push(timer)
-}
-
-function playCommentaryClip(url: string, fallbackText: string, style: CommentaryStyleId, delay: number, volume: number) {
-  const timer = window.setTimeout(() => {
-    const clip = new Audio(url)
-    clip.preload = 'auto'
-    clip.volume = volume
-    activeCommentaryClips.push(clip)
-    clip.addEventListener(
-      'ended',
-      () => {
-        const index = activeCommentaryClips.indexOf(clip)
-        if (index >= 0) activeCommentaryClips.splice(index, 1)
-      },
-      { once: true },
-    )
-    void clip.play().catch(() => speakCommentaryLine(fallbackText, style, 0))
-  }, delay)
-
-  commentaryTimers.push(timer)
-}
-
-function playRecordedCommentary(outcome: TimelineOutcome) {
-  const clips = getOutcomeCommentaryClips(outcome)
-  if (clips.length === 0) return false
-
-  clips.forEach((clip) => {
-    playCommentaryClip(clip.url, clip.caption, outcome.commentaryStyle, clip.delay, clip.volume)
-  })
-  return true
-}
-
 export function stopCommentary() {
   commentaryTimers.splice(0).forEach((timer) => window.clearTimeout(timer))
-  activeCommentaryClips.splice(0).forEach((clip) => {
-    clip.pause()
-    clip.currentTime = 0
-  })
-  if ('speechSynthesis' in window) window.speechSynthesis.cancel()
 }
 
 export function playFootballCue(kind: FootballCue) {
@@ -311,8 +230,4 @@ export function playOutcomeCues(outcome: TimelineOutcome) {
   }, 670)
   window.setTimeout(() => crowdBed(outcome.crowdBed), 780)
   window.setTimeout(() => commentarySting(outcome), 1120)
-  if (!playRecordedCommentary(outcome)) {
-    speakCommentaryLine(outcome.commentatorLine, outcome.commentaryStyle, 940)
-    speakCommentaryLine(getOutcomeFollowUpLine(outcome), outcome.commentaryStyle, 2600)
-  }
 }
