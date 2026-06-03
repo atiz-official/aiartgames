@@ -61,7 +61,7 @@ function drawShareOverlay(context: CanvasRenderingContext2D, outcome: TimelineOu
   drawRoundedRect(context, safeX, height - 338, width - safeX * 2, 236, 30)
   context.fillStyle = '#ffe88c'
   context.font = '900 27px Arial, sans-serif'
-  context.fillText(`${timelineId} - ${outcome.rarity.toUpperCase()}`, safeX + 34, height - 280)
+  context.fillText(`${timelineId} - ${outcome.rarity.toUpperCase()} - ${outcome.odds}`, safeX + 34, height - 280)
   context.fillStyle = '#fffbe6'
   context.font = '900 62px Arial, sans-serif'
   context.fillText(outcome.label, safeX + 34, height - 200)
@@ -71,6 +71,22 @@ function drawShareOverlay(context: CanvasRenderingContext2D, outcome: TimelineOu
   context.fillStyle = 'rgba(255, 255, 255, 0.62)'
   context.font = '700 24px Arial, sans-serif'
   context.fillText('Play the match-deciding moment. Rewrite the timeline.', safeX + 34, height - 93)
+
+  outcome.beats.slice(0, 3).forEach((beat, index) => {
+    const chipX = safeX + 34 + index * 198
+    const chipY = height - 74
+    context.fillStyle = 'rgba(255, 255, 255, 0.08)'
+    drawRoundedRect(context, chipX, chipY, 182, 34, 12)
+    context.fillStyle = 'rgba(255, 255, 255, 0.72)'
+    context.font = '700 15px Arial, sans-serif'
+    context.fillText(beat.slice(0, 24), chipX + 10, chipY + 22)
+  })
+
+  context.fillStyle = outcome.rarityTier === 'absurd' ? 'rgba(181, 255, 204, 0.9)' : outcome.rarityTier === 'cursed' ? 'rgba(184, 140, 255, 0.9)' : 'rgba(255, 232, 140, 0.9)'
+  drawRoundedRect(context, width - 310, 92, 250, 52, 18)
+  context.fillStyle = '#07100d'
+  context.font = '900 22px Arial, sans-serif'
+  context.fillText(outcome.crowdSign.slice(0, 18), width - 286, 126)
 
   const ballStartX = width * 0.46
   const ballStartY = height * 0.63

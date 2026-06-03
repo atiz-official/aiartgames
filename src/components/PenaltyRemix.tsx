@@ -222,6 +222,33 @@ function FanIntervention({ source, cloneTime }: { source: string; cloneTime: num
   )
 }
 
+function TimelineAtmosphere({ outcome }: { outcome: TimelineOutcome }) {
+  return (
+    <div
+      className={`timeline-atmosphere crowd-${outcome.crowdBed} keeper-react-${outcome.keeperReaction} player-react-${outcome.playerReaction}`}
+      aria-hidden
+    >
+      <span className="crowd-sign sign-primary">{outcome.crowdSign}</span>
+      <span className="crowd-sign sign-secondary">{outcome.rarityTier.toUpperCase()} PULL</span>
+      <span className="phone-lights lights-a" />
+      <span className="phone-lights lights-b" />
+      <span className="keeper-emote">
+        <i className="keeper-emote-head" />
+        <i className="keeper-emote-body" />
+        <i className="keeper-emote-arm arm-a" />
+        <i className="keeper-emote-arm arm-b" />
+      </span>
+      <span className="player-emote">
+        <i className="player-emote-head" />
+        <i className="player-emote-body" />
+        <i className="player-emote-arm arm-a" />
+        <i className="player-emote-arm arm-b" />
+      </span>
+      <span className="commentator-subtitle">{outcome.commentatorLine}</span>
+    </div>
+  )
+}
+
 export function PenaltyRemix({ scenario = getScenario() }: { scenario?: PlayableMomentScenario }) {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [phase, setPhase] = useState<ClipPhase>('ready')
@@ -307,7 +334,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
     setOutcome(nextOutcome)
     setPhase('result')
     playFootballCue('kick')
-    playOutcomeCues(nextOutcome.effect === 'fan' ? 'chaos' : nextOutcome.effect === 'portal' ? 'portal' : 'crowd', nextOutcome.impact)
+    playOutcomeCues(nextOutcome)
   }
 
   async function saveShareClip(nextOutcome: TimelineOutcome) {
@@ -320,7 +347,11 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
   }
 
   return (
-    <main className={`penalty-lab phase-${phase} ${outcome ? `outcome-${outcome.effect} impact-${outcome.impact}` : ''}`}>
+    <main
+      className={`penalty-lab phase-${phase} ${
+        outcome ? `outcome-${outcome.effect} impact-${outcome.impact} camera-${outcome.cameraTreatment} rarity-${outcome.rarityTier}` : ''
+      }`}
+    >
       <section className="penalty-stage" aria-label="Playable news penalty remix">
         <video ref={videoRef} src={source} muted playsInline preload="auto" onTimeUpdate={onTimeUpdate} />
         <div className="broadcast-grade" />
@@ -388,6 +419,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
         {outcome && (
           <>
             <ActionShock outcome={outcome} />
+            <TimelineAtmosphere outcome={outcome} />
             {outcome.effect === 'fan' && <FanIntervention source={source} cloneTime={scenario.decisionTime} />}
             <KeeperReplacementMask />
             <KeeperReaction outcome={outcome} />
@@ -400,9 +432,14 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
 
         {phase === 'result' && outcome && (
           <div className="result-slab">
-            <span>{timelineId} - {outcome.rarity}</span>
+            <span>{timelineId} - {outcome.rarity} - {outcome.odds}</span>
             <h2>{outcome.label}</h2>
             <p>{outcome.caption}</p>
+            <div className="timeline-beats" aria-label="Timeline beats">
+              {outcome.beats.map((beat) => (
+                <small key={beat}>{beat}</small>
+              ))}
+            </div>
             <div className="result-actions">
               <button type="button" onClick={start}>
                 <RotateCcw size={16} />

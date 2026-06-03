@@ -1,3 +1,5 @@
+import type { CrowdBedId, TimelineOutcome } from '../engine/types'
+
 type FootballCue = 'whistle' | 'kick' | 'crowd' | 'portal' | 'tension' | 'net' | 'save' | 'post' | 'chaos'
 
 type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof AudioContext }
@@ -67,6 +69,90 @@ function noise(duration: number, options: { gain?: number; delay?: number; lowpa
   source.stop(start + duration + 0.05)
 }
 
+function chant(frequencies: number[], delay: number, gain = 0.035) {
+  frequencies.forEach((frequency, index) => {
+    tone(frequency, 0.34, { gain, type: 'triangle', delay: delay + index * 0.12 })
+  })
+}
+
+function crowdBed(kind: CrowdBedId) {
+  if (kind === 'roar') {
+    noise(2.8, { gain: 0.16, lowpass: 4200, highpass: 120 })
+    chant([196, 247, 294, 392], 0.2, 0.032)
+    noise(1.1, { gain: 0.08, delay: 0.9, lowpass: 5200, highpass: 900 })
+    return
+  }
+
+  if (kind === 'hero-chant') {
+    noise(2.6, { gain: 0.13, lowpass: 3600, highpass: 180 })
+    chant([220, 277, 330, 440, 554], 0.08, 0.038)
+    chant([165, 220, 277], 1.0, 0.028)
+    return
+  }
+
+  if (kind === 'gasp') {
+    noise(0.52, { gain: 0.09, lowpass: 1800, highpass: 260, delay: 0.05 })
+    noise(1.4, { gain: 0.052, lowpass: 2600, highpass: 190, delay: 0.58 })
+    tone(132, 0.7, { gain: 0.026, type: 'triangle', delay: 0.42 })
+    return
+  }
+
+  if (kind === 'silence') {
+    tone(72, 1.3, { gain: 0.018, type: 'sine', delay: 0.08 })
+    noise(0.8, { gain: 0.018, lowpass: 700, highpass: 120, delay: 0.45 })
+    return
+  }
+
+  if (kind === 'post-clang') {
+    tone(920, 0.75, { gain: 0.13, type: 'square', delay: 0.02 })
+    tone(1380, 0.42, { gain: 0.048, type: 'triangle', delay: 0.07 })
+    noise(1.2, { gain: 0.055, lowpass: 2400, highpass: 180, delay: 0.42 })
+    return
+  }
+
+  if (kind === 'chaos-surge') {
+    noise(3.2, { gain: 0.17, lowpass: 5200, highpass: 140 })
+    chant([185, 233, 277, 311], 0.12, 0.043)
+    tone(74, 1.1, { gain: 0.055, type: 'sawtooth', delay: 0.22 })
+    noise(0.5, { gain: 0.085, lowpass: 6200, highpass: 1400, delay: 0.72 })
+    return
+  }
+
+  if (kind === 'var-confusion') {
+    noise(2.0, { gain: 0.06, lowpass: 1700, highpass: 220 })
+    tone(440, 0.2, { gain: 0.035, type: 'square', delay: 0.22 })
+    tone(440, 0.2, { gain: 0.028, type: 'square', delay: 0.48 })
+    tone(118, 1.2, { gain: 0.05, type: 'sawtooth', delay: 0.56 })
+    return
+  }
+
+  if (kind === 'stunned-laughter') {
+    noise(0.62, { gain: 0.05, lowpass: 1400, highpass: 220, delay: 0.16 })
+    chant([262, 220, 196, 175], 0.42, 0.026)
+    noise(1.6, { gain: 0.055, lowpass: 3200, highpass: 340, delay: 0.92 })
+  }
+}
+
+function commentarySting(outcome: TimelineOutcome) {
+  if (outcome.commentaryStyle === 'thai-chaos') {
+    chant([392, 494, 587, 784], 0.08, 0.028)
+    return
+  }
+  if (outcome.commentaryStyle === 'english-drama') {
+    chant([165, 220, 330], 0.16, 0.026)
+    return
+  }
+  if (outcome.commentaryStyle === 'var-room') {
+    tone(520, 0.16, { gain: 0.026, type: 'square', delay: 0.16 })
+    tone(260, 0.42, { gain: 0.03, type: 'sawtooth', delay: 0.42 })
+    return
+  }
+  if (outcome.commentaryStyle === 'meme-table') {
+    tone(280, 0.2, { gain: 0.04, type: 'square', delay: 0.08 })
+    tone(210, 0.22, { gain: 0.034, type: 'square', delay: 0.24 })
+  }
+}
+
 export function playFootballCue(kind: FootballCue) {
   if (kind === 'whistle') {
     tone(1440, 0.26, { gain: 0.12, type: 'square' })
@@ -127,13 +213,15 @@ export function playFootballCue(kind: FootballCue) {
   }
 }
 
-export function playOutcomeCues(effect: FootballCue, impact: 'net' | 'save' | 'post' | 'miss' | 'portal') {
+export function playOutcomeCues(outcome: TimelineOutcome) {
+  const effect = outcome.effect === 'fan' ? 'chaos' : outcome.effect === 'portal' ? 'portal' : 'crowd'
   window.setTimeout(() => playFootballCue(effect), effect === 'chaos' ? 80 : 0)
   window.setTimeout(() => {
-    if (impact === 'net') playFootballCue('net')
-    if (impact === 'save') playFootballCue('save')
-    if (impact === 'post') playFootballCue('post')
-    if (impact === 'portal') playFootballCue('portal')
+    if (outcome.impact === 'net') playFootballCue('net')
+    if (outcome.impact === 'save') playFootballCue('save')
+    if (outcome.impact === 'post') playFootballCue('post')
+    if (outcome.impact === 'portal') playFootballCue('portal')
   }, 670)
-  window.setTimeout(() => playFootballCue('crowd'), 820)
+  window.setTimeout(() => crowdBed(outcome.crowdBed), 780)
+  window.setTimeout(() => commentarySting(outcome), 1120)
 }
