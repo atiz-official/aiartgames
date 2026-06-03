@@ -1,4 +1,5 @@
 import type { CommentaryStyleId, CrowdBedId, TimelineOutcome } from '../engine/types'
+import { getOutcomeCommentaryClips, getOutcomeFollowUpLine } from './commentaryVoicePack'
 
 type FootballCue = 'whistle' | 'kick' | 'crowd' | 'portal' | 'tension' | 'net' | 'save' | 'post' | 'chaos'
 
@@ -6,6 +7,7 @@ type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof Audi
 
 let audioContext: AudioContext | null = null
 const commentaryTimers: number[] = []
+const activeCommentaryClips: HTMLAudioElement[] = []
 
 function getAudioContext() {
   const AudioContextClass = window.AudioContext || (window as BrowserWindowWithAudio).webkitAudioContext
@@ -171,21 +173,10 @@ function getCommentaryVoice(lang: string) {
 
 function getSpeechProfile(style: CommentaryStyleId) {
   if (style === 'thai-chaos') return { rate: 1.08, pitch: 1.16, volume: 0.9 }
-  if (style === 'english-drama') return { rate: 0.94, pitch: 1.0, volume: 0.88 }
+  if (style === 'english-drama') return { rate: 0.94, pitch: 1, volume: 0.88 }
   if (style === 'var-room') return { rate: 0.86, pitch: 0.78, volume: 0.84 }
   if (style === 'meme-table') return { rate: 1.12, pitch: 1.18, volume: 0.9 }
   return { rate: 0.82, pitch: 0.82, volume: 0.78 }
-}
-
-function getFollowUpLine(outcome: TimelineOutcome) {
-  if (outcome.effect === 'fan') return 'That is not in the laws of the game, but it is absolutely in this timeline.'
-  if (outcome.effect === 'portal') return 'VAR is still checking which universe should restart play.'
-  if (outcome.impact === 'save') return 'The keeper read the future, launched himself, and kept this story alive.'
-  if (outcome.impact === 'post') return 'Listen to that silence. One inch just changed the whole night.'
-  if (outcome.impact === 'miss') return 'The stadium cannot decide whether to laugh, cry, or pretend that never happened.'
-  if (outcome.rarityTier === 'legendary') return 'Clip that. This is the version people will argue about tomorrow.'
-  if (outcome.commentaryStyle === 'thai-chaos') return 'สนามแตกแล้วครับ ไทม์ไลน์นี้เปลี่ยนทุกอย่าง!'
-  return 'The crowd erupts, the camera shakes, and the timeline locks in.'
 }
 
 function speakCommentaryLine(text: string, style: CommentaryStyleId, delay: number) {
@@ -209,8 +200,42 @@ function speakCommentaryLine(text: string, style: CommentaryStyleId, delay: numb
   commentaryTimers.push(timer)
 }
 
+function playCommentaryClip(url: string, fallbackText: string, style: CommentaryStyleId, delay: number, volume: number) {
+  const timer = window.setTimeout(() => {
+    const clip = new Audio(url)
+    clip.preload = 'auto'
+    clip.volume = volume
+    activeCommentaryClips.push(clip)
+    clip.addEventListener(
+      'ended',
+      () => {
+        const index = activeCommentaryClips.indexOf(clip)
+        if (index >= 0) activeCommentaryClips.splice(index, 1)
+      },
+      { once: true },
+    )
+    void clip.play().catch(() => speakCommentaryLine(fallbackText, style, 0))
+  }, delay)
+
+  commentaryTimers.push(timer)
+}
+
+function playRecordedCommentary(outcome: TimelineOutcome) {
+  const clips = getOutcomeCommentaryClips(outcome)
+  if (clips.length === 0) return false
+
+  clips.forEach((clip) => {
+    playCommentaryClip(clip.url, clip.caption, outcome.commentaryStyle, clip.delay, clip.volume)
+  })
+  return true
+}
+
 export function stopCommentary() {
   commentaryTimers.splice(0).forEach((timer) => window.clearTimeout(timer))
+  activeCommentaryClips.splice(0).forEach((clip) => {
+    clip.pause()
+    clip.currentTime = 0
+  })
   if ('speechSynthesis' in window) window.speechSynthesis.cancel()
 }
 
@@ -286,6 +311,8 @@ export function playOutcomeCues(outcome: TimelineOutcome) {
   }, 670)
   window.setTimeout(() => crowdBed(outcome.crowdBed), 780)
   window.setTimeout(() => commentarySting(outcome), 1120)
-  speakCommentaryLine(outcome.commentatorLine, outcome.commentaryStyle, 940)
-  speakCommentaryLine(getFollowUpLine(outcome), outcome.commentaryStyle, 2600)
+  if (!playRecordedCommentary(outcome)) {
+    speakCommentaryLine(outcome.commentatorLine, outcome.commentaryStyle, 940)
+    speakCommentaryLine(getOutcomeFollowUpLine(outcome), outcome.commentaryStyle, 2600)
+  }
 }

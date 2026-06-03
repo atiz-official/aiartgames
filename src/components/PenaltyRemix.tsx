@@ -2,6 +2,7 @@ import { Camera, CircleDot, RotateCcw, Sparkles, Video, Zap } from 'lucide-react
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { playFootballCue, playOutcomeCues, stopCommentary } from '../audio/footballAudio'
+import { preloadCommentaryVoicePack } from '../audio/commentaryVoicePack'
 import { pickFootballOutcome } from '../engine/footballOutcomes'
 import { randomSeed } from '../engine/random'
 import type { ClipPhase, PlayableMomentScenario, TimelineEnergy, TimelineOutcome } from '../engine/types'
@@ -298,6 +299,7 @@ export function PenaltyRemix({ scenario = getScenario() }: { scenario?: Playable
 
   async function start() {
     stopCommentary()
+    preloadCommentaryVoicePack()
     setPhase('setup')
     setEnergy(null)
     setOutcome(null)

@@ -1,6 +1,8 @@
 import type { PlayableMomentScenario, TimelineOutcome } from '../engine/types'
+import { getOutcomeCommentaryClips } from '../audio/commentaryVoicePack'
 
 type BrowserWindowWithAudio = typeof window & { webkitAudioContext?: typeof AudioContext }
+type DecodedCommentaryClip = { clip: ReturnType<typeof getOutcomeCommentaryClips>[number]; buffer: AudioBuffer }
 
 export function getTimelineLabel(seed: number) {
   return `#${seed.toString(16).toUpperCase()}`
@@ -209,8 +211,32 @@ function scheduleShareCommentaryCadence(context: AudioContext, destination: Audi
   }
 }
 
-function scheduleShareAudio(context: AudioContext, destination: AudioNode, outcome: TimelineOutcome) {
-  const start = context.currentTime + 0.08
+async function loadShareCommentaryClips(context: AudioContext, outcome: TimelineOutcome): Promise<DecodedCommentaryClip[]> {
+  const clips = getOutcomeCommentaryClips(outcome)
+  return Promise.all(
+    clips.map(async (clip) => {
+      const response = await fetch(clip.url)
+      const bytes = await response.arrayBuffer()
+      return { clip, buffer: await context.decodeAudioData(bytes) }
+    }),
+  )
+}
+
+function scheduleShareCommentaryClips(context: AudioContext, destination: AudioNode, decodedClips: DecodedCommentaryClip[], start: number) {
+  decodedClips.forEach(({ clip, buffer }) => {
+    const source = context.createBufferSource()
+    const gain = context.createGain()
+    source.buffer = buffer
+    gain.gain.value = clip.volume
+    source.connect(gain)
+    gain.connect(destination)
+    source.start(start + clip.delay / 1000)
+  })
+}
+
+async function scheduleShareAudio(context: AudioContext, destination: AudioNode, outcome: TimelineOutcome) {
+  const decodedClips = await loadShareCommentaryClips(context, outcome)
+  const start = context.currentTime + 0.12
 
   scheduleShareNoise(context, destination, start, 4.15, { gain: 0.035, lowpass: 2400, highpass: 160 })
   scheduleShareTone(context, destination, 1420, start + 0.1, 0.24, { gain: 0.065, type: 'square' })
@@ -244,15 +270,16 @@ function scheduleShareAudio(context: AudioContext, destination: AudioNode, outco
   }
 
   scheduleShareCommentaryCadence(context, destination, outcome, start + 2.18)
+  scheduleShareCommentaryClips(context, destination, decodedClips, start)
 }
 
-function createShareAudioStream(outcome: TimelineOutcome) {
+async function createShareAudioStream(outcome: TimelineOutcome) {
   const AudioContextClass = window.AudioContext || (window as BrowserWindowWithAudio).webkitAudioContext
   if (!AudioContextClass) return null
   const context = new AudioContextClass()
   if (context.state === 'suspended') void context.resume()
   const destination = context.createMediaStreamDestination()
-  scheduleShareAudio(context, destination, outcome)
+  await scheduleShareAudio(context, destination, outcome)
   return { context, stream: destination.stream }
 }
 
@@ -286,9 +313,9 @@ export async function exportTimelineClip(sourceUrl: string, scenario: PlayableMo
 
   const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm'
   const stream = canvas.captureStream(30)
-  const shareAudio = (() => {
+  const shareAudio = await (async () => {
     try {
-      return createShareAudioStream(outcome)
+      return await createShareAudioStream(outcome)
     } catch {
       return null
     }

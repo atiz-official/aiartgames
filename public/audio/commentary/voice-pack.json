@@ -1,0 +1,22 @@
+{
+  "id": "football-timeline-commentary-v1-local",
+  "description": "Pre-generated football timeline commentator clips for the first playable-news penalty scenario.",
+  "generator": "Windows System.Speech local SAPI voices",
+  "qualityNote": "Prototype voice pack. Replace with licensed human or neural commentator clips for production.",
+  "clips": [
+    { "outcomeId": "fan-steals-kick", "role": "main", "file": "fan-steals-kick-main.wav", "line": "Wait wait! That is not the taker! A fan has taken the shot!" },
+    { "outcomeId": "fan-steals-kick", "role": "followup", "file": "fan-steals-kick-followup.wav", "line": "The stadium has lost its mind. This timeline is officially absurd." },
+    { "outcomeId": "var-portal", "role": "main", "file": "var-portal-main.wav", "line": "The ball has disappeared! VAR is checking which universe owns it!" },
+    { "outcomeId": "var-portal", "role": "followup", "file": "var-portal-followup.wav", "line": "Nobody knows if this is a goal, a glitch, or evidence." },
+    { "outcomeId": "top-bins", "role": "main", "file": "top-bins-main.wav", "line": "Top corner! That is not a goal, that is a rewritten memory!" },
+    { "outcomeId": "top-bins", "role": "followup", "file": "top-bins-followup.wav", "line": "Clip that. This is the version people will argue about tomorrow." },
+    { "outcomeId": "goal", "role": "main", "file": "goal-main.wav", "line": "It is in! Clean timeline, pure pressure release!" },
+    { "outcomeId": "goal", "role": "followup", "file": "goal-followup.wav", "line": "The crowd erupts, the camera shakes, and the timeline locks in." },
+    { "outcomeId": "post", "role": "main", "file": "post-main.wav", "line": "Off the post! One inch from rewriting the group chat!" },
+    { "outcomeId": "post", "role": "followup", "file": "post-followup.wav", "line": "Listen to that silence. One inch just changed the whole night." },
+    { "outcomeId": "saved", "role": "main", "file": "saved-main.wav", "line": "Saved! The keeper read the future and slapped it away!" },
+    { "outcomeId": "saved", "role": "followup", "file": "saved-followup.wav", "line": "That reaction is why this moment still hurts." },
+    { "outcomeId": "sky", "role": "main", "file": "sky-main.wav", "line": "Oh no! That ball may need a visa to come back down!" },
+    { "outcomeId": "sky", "role": "followup", "file": "sky-followup.wav", "line": "The stadium cannot decide whether to laugh or cry." }
+  ]
+}
